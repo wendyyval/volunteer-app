@@ -38,10 +38,10 @@ export default function Login(){
                     onChange={e=>setPassword(e.target.value)}
                     />
                     {err && <p className="text-red-600 text-sm">{err}</p>}
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded">Sign In</button>
+                    <button className="bg-blue-600 text-white px-4 py-2 rounded">Login</button>
                     </form>
                     <p className="text-sm mt-3">
-                        No account? <Link to="/register" className="text-blue-600">Register</Link>
+                        Don't have an account yet? <Link to="/register" className="text-blue-600">Sign Up!</Link>
                     </p>
         </div>
     );
