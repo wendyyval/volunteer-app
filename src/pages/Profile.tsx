@@ -1,8 +1,19 @@
 import {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import Select from "react-select";
+import DatePicker, { DateObject } from "react-multi-date-picker";
+//import {useNavigate} from 'react-router-dom';
+
+const skillOptions = [
+  { value: "skill 1", label: "skill 1" },
+  { value: "skill 2", label: "skill 2" },
+  { value: "skill 3", label: "skill 3" },
+  { value: "skill 4", label: "skill 4" },
+  { value: "skill 5", label: "skill 5" },
+  { value: "skill 6", label: "skil 6" },
+];
 
 export default function Profile() {
-    const nav = useNavigate();
+    //const nav = useNavigate();
     const [fullName, setFullName] = useState("")
     const [address1, setAddress1] = useState("")
     const [address2, setAddress2] = useState("")
@@ -11,7 +22,7 @@ export default function Profile() {
     const [zipCode, setZipCode] = useState("")
     const [skills, setSkills] = useState<string[]>([])
     const [preferences, setPreferences] = useState("")
-    const [availability, setAvailability] = useState<Date[]>([])
+    const [availability, setAvailability] = useState<DateObject[]>([])
     const [err, setErr] = useState("");
 
     function onSubmit(e: React.FormEvent){
@@ -139,7 +150,43 @@ export default function Profile() {
                     />
                 </div>
 
+                <div className="flex flex-col">
+                    <label className="mb-1 font-medium"> Skills</label>
+                    <Select isMulti
+                        className="text-black"
+                        options={skillOptions}
+                        value={skillOptions.filter(option => skills.includes(option.value))}
+                        onChange={(selected) =>setSkills(selected.map(option => option.value))}
+                        placeholder = "Select your skills..."
+                    />
+                </div>
 
+                <div className="flex flex-col">
+                    <label className="mb-1 font-medium">Preferences</label>
+                    <textarea
+                        className="border p-2 rounded w-full"
+                        placeholder="Write any specific preferences...(optional)"
+                        value={preferences}
+                        onChange={(e) => setPreferences(e.target.value)}
+                    />
+                </div>
+
+                <div className="flex flex-col">
+                    <label className="mb-1 font-medium">Availability</label>
+                    <DatePicker
+                        multiple
+                        className="border p-2 rounded w-full"
+                        value={availability}
+                        onChange={(dates: DateObject[]) => {setAvailability(dates);}}
+                        format="MM/DD/YYYY"
+                        placeholder="Select your available dates"
+                    />
+                </div>
+
+                <div>
+                    {err && <p className="text-red-600 text-sm">{err}</p>}
+                    <button className="bg-blue-600 text-white px-4 py-2 rounded">Submit Profile</button>
+                </div>
             </form>
         </div>
     );
