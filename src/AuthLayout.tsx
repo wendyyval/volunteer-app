@@ -20,7 +20,7 @@ export default function AuthLayout({children}: {children: ReactNode}){
                     <div className="auth-visual relative hidden md:block">
                         <div className="visual-frame">
                         <img 
-                            src="src/assets/64646.jpg" alt="Volunteering" className="h-full w-full object-cover"
+                            src="src/images/64646.jpg" alt="Volunteering" className="h-full w-full object-cover"
                             />
                         </div>
                     
