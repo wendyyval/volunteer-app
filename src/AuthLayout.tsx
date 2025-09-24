@@ -1,5 +1,7 @@
 import { Link, useLocation} from "react-router-dom";
 import type {ReactNode} from "react";
+import hero from "./assets/64646.jpg";
+
 
 export default function AuthLayout({children}: {children: ReactNode}){
     const { pathname } = useLocation();
@@ -19,9 +21,7 @@ export default function AuthLayout({children}: {children: ReactNode}){
                     {/*left visual*/}
                     <div className="auth-visual relative hidden md:block">
                         <div className="visual-frame">
-                        <img 
-                            src="src/assets/64646.jpg" alt="Volunteering" className="h-full w-full object-cover"
-                            />
+                        <img src={hero} alt="Volunteering" className="h-full w-full object-cover" />
                         </div>
                     
                     {/*brand row*/}
