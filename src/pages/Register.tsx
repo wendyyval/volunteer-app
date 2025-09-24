@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import AuthLayout from "../AuthLayout";
+import toast from "react-hot-toast";
 
 
 
@@ -23,14 +24,16 @@ export default function Register(){
             return setErr("Password must be at least 6 characters long.");
         }
         setLoading(true);
-        setTimeout(()=>{ alert("Account cretead! Please log in."); nav("/login");}, 500);
+        /*setTimeout(()=>{ alert("Account cretead! Please log in."); nav("/login");}, 500);*/
+        toast.success("Account created. Please sign in.");
+        setTimeout(() => nav("/login"), 600);
     }
     return(
         <AuthLayout>
             <h1 className="text-3xl font-semibold text-white mb-2">Create an account today!</h1>
             <p className="text-slate-300 mb-8">Join us in making a difference!</p>
 
-            <form onSubmit ={onSubmit} className="grid fap-5">
+            <form onSubmit ={onSubmit} className="grid gap-5" noValidate>
                 <div className="grid gap-2">
                     <label className="text-sm font-semibold text-slate-200">Email</label>
                     <input
@@ -59,7 +62,9 @@ export default function Register(){
                         <button className="btn-primary btn-block h-12 text-base mt-2" type="submit" disabled={loading}>
                             {loading ? "Creating..." : "Create Account"}
                         </button>
+                            
                     </form>
         </AuthLayout>
+        
     );
 }
