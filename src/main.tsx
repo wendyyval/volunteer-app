@@ -3,16 +3,19 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css"
 import App from "./App.tsx"
-import { BrowserRouter } from "react-router-dom"
+import { HashRouter } from "react-router-dom"
 import "./index.css";
 import { Toaster } from "react-hot-toast";
+import { NotificationProvider } from "./notifications/NotificationProvider";
 
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <HashRouter>
+      <NotificationProvider>
+        <App />
+      </NotificationProvider>
+    </HashRouter>
     <Toaster
       position="top-center"
       toastOptions={{ duration: 3000 }}
