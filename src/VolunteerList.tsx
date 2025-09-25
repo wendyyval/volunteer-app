@@ -1,80 +1,212 @@
 ﻿import React, { useState } from 'react'
 import './VolunteerList.css'
+import VolunteerDetails from './VolunteerDetails';
+
 
 // Sample volunteer data
 const volunteers = [
     {
         id: 1,
         name: 'Alice Johnson',
-        skills: ['Cooking', 'First Aid'],
         city: 'New York',
-        availability: ['2025-09-25', '2025-09-27']
+        state: 'NY',
+        zip: '10001',
+        skills: ['Cooking', 'First Aid'],
+        availability: ['2025-09-25', '2025-09-27'],
+        preferences: 'Morning shifts preferred',
     },
     {
         id: 2,
         name: 'Bob Smith',
-        skills: ['Logistics', 'Event Planning'],
         city: 'Los Angeles',
-        availability: ['2025-09-26', '2025-09-28']
+        state: 'CA',
+        zip: '90001',
+        skills: ['Teaching', 'Driving'],
+        availability: ['2025-09-26', '2025-09-28'],
+        preferences: 'Evenings only',
     },
     {
         id: 3,
         name: 'Charlie Brown',
-        skills: ['Fundraising', 'Community Outreach'],
         city: 'Chicago',
-        availability: ['2025-09-27', '2025-09-29']
+        state: 'IL',
+        zip: '60601',
+        skills: ['Medical', 'Logistics'],
+        availability: ['2025-09-25', '2025-09-29'],
+        preferences: '',
     },
     {
         id: 4,
         name: 'Diana Prince',
-        skills: ['Social Media', 'Marketing'],
-        city: 'Houston',
-        availability: ['2025-09-28', '2025-09-30']
+        city: 'San Francisco',
+        state: 'CA',
+        zip: '94101',
+        skills: ['Cooking', 'Teaching'],
+        availability: ['2025-09-27', '2025-09-30'],
+        preferences: 'Afternoon shifts preferred',
     },
     {
         id: 5,
         name: 'Ethan Hunt',
-        skills: ['Public Speaking', 'Advocacy'],
-        city: 'Phoenix',
-        availability: ['2025-09-29', '2025-09-30']
+        city: 'Houston',
+        state: 'TX',
+        zip: '77001',
+        skills: ['Driving', 'Logistics'],
+        availability: ['2025-09-25', '2025-09-28'],
+        preferences: '',
     },
     {
         id: 6,
         name: 'Fiona Gallagher',
-        skills: ['Graphic Design', 'Content Creation'],
-        city: 'Philadelphia',
-        availability: ['2025-09-30', '2025-10-01']
+        city: 'Miami',
+        state: 'FL',
+        zip: '33101',
+        skills: ['Medical', 'First Aid'],
+        availability: ['2025-09-26', '2025-09-29'],
+        preferences: 'Weekends only',
     },
     {
         id: 7,
-        name: 'George Costanza',
-        skills: ['Negotiation', 'Conflict Resolution'],
-        city: 'San Antonio',
-        availability: ['2025-10-01', '2025-10-02']
+        name: 'George Miller',
+        city: 'Seattle',
+        state: 'WA',
+        zip: '98101',
+        skills: ['Teaching', 'Cooking'],
+        availability: ['2025-09-27', '2025-09-30'],
+        preferences: '',
     },
     {
         id: 8,
-        name: 'Hannah Montana',
-        skills: ['Music', 'Performance'],
-        city: 'San Diego',
-        availability: ['2025-10-02', '2025-10-03']
+        name: 'Hannah Lee',
+        city: 'Boston',
+        state: 'MA',
+        zip: '02101',
+        skills: ['Logistics', 'Driving'],
+        availability: ['2025-09-25', '2025-09-28'],
+        preferences: 'Mornings only',
     },
     {
         id: 9,
-        name: 'Ian Malcolm',
-        skills: ['Data Analysis', 'Research'],
-        city: 'Dallas',
-        availability: ['2025-10-03', '2025-10-04']
+        name: 'Ian Wright',
+        city: 'Denver',
+        state: 'CO',
+        zip: '80201',
+        skills: ['Medical', 'Cooking'],
+        availability: ['2025-09-26', '2025-09-29'],
+        preferences: '',
     },
     {
         id: 10,
-        name: 'Jane Doe',
-        skills: ['Writing', 'Editing'],
-        city: 'San Jose',
-        availability: ['2025-10-04', '2025-10-05']
+        name: 'Jessica Adams',
+        city: 'Atlanta',
+        state: 'GA',
+        zip: '30301',
+        skills: ['Teaching', 'First Aid'],
+        availability: ['2025-09-27', '2025-09-30'],
+        preferences: '',
     },
-    
-]
+    {
+        id: 11,
+        name: 'Kevin Hart',
+        city: 'Dallas',
+        state: 'TX',
+        zip: '75201',
+        skills: ['Driving', 'Logistics'],
+        availability: ['2025-09-25', '2025-09-28'],
+        preferences: 'Evenings only',
+    },
+    {
+        id: 12,
+        name: 'Laura Kim',
+        city: 'Phoenix',
+        state: 'AZ',
+        zip: '85001',
+        skills: ['Medical', 'Teaching'],
+        availability: ['2025-09-26', '2025-09-29'],
+        preferences: 'Weekends preferred',
+    },
+    {
+        id: 13,
+        name: 'Michael Scott',
+        city: 'Scranton',
+        state: 'PA',
+        zip: '18501',
+        skills: ['Logistics', 'Driving'],
+        availability: ['2025-09-25', '2025-09-27'],
+        preferences: '',
+    },
+    {
+        id: 14,
+        name: 'Natalie Portman',
+        city: 'Los Angeles',
+        state: 'CA',
+        zip: '90002',
+        skills: ['Cooking', 'Medical'],
+        availability: ['2025-09-26', '2025-09-30'],
+        preferences: '',
+    },
+    {
+        id: 15,
+        name: 'Oliver Queen',
+        city: 'Star City',
+        state: 'CA',
+        zip: '94016',
+        skills: ['Teaching', 'Driving'],
+        availability: ['2025-09-25', '2025-09-28'],
+        preferences: 'Mornings preferred',
+    },
+    {
+        id: 16,
+        name: 'Pam Beesly',
+        city: 'Scranton',
+        state: 'PA',
+        zip: '18502',
+        skills: ['First Aid', 'Cooking'],
+        availability: ['2025-09-26', '2025-09-29'],
+        preferences: '',
+    },
+    {
+        id: 17,
+        name: 'Quentin Tarantino',
+        city: 'Los Angeles',
+        state: 'CA',
+        zip: '90003',
+        skills: ['Logistics', 'Medical'],
+        availability: ['2025-09-27', '2025-09-30'],
+        preferences: 'Afternoon shifts preferred',
+    },
+    {
+        id: 18,
+        name: 'Rachel Green',
+        city: 'New York',
+        state: 'NY',
+        zip: '10002',
+        skills: ['Cooking', 'Teaching'],
+        availability: ['2025-09-25', '2025-09-28'],
+        preferences: '',
+    },
+    {
+        id: 19,
+        name: 'Steve Rogers',
+        city: 'Brooklyn',
+        state: 'NY',
+        zip: '11201',
+        skills: ['Driving', 'First Aid'],
+        availability: ['2025-09-26', '2025-09-29'],
+        preferences: '',
+    },
+    {
+        id: 20,
+        name: 'Tony Stark',
+        city: 'Malibu',
+        state: 'CA',
+        zip: '90265',
+        skills: ['Logistics', 'Medical'],
+        availability: ['2025-09-27', '2025-09-30'],
+        preferences: 'Flexible schedule',
+    },
+];
+
 
 function VolunteerList() {
     const [selectedVolunteerId, setSelectedVolunteerId] = useState<number | null>(null)
@@ -98,25 +230,20 @@ function VolunteerList() {
                 </div>
             </div>
 
-            {/* Right panel: placeholder */}
-            {/* show selected volunteer details */}
+             {/*Right panel: placeholder */}
+             {/*show selected volunteer details */}
             <div className="details-panel">
                 {selectedVolunteerId ? (
-                    (() => {
-                        const volunteer = volunteers.find(v => v.id === selectedVolunteerId);
-                        return volunteer ? (
-                            <div>
-                                <h2>{volunteer.name}</h2>
-                                <p><strong>City:</strong> {volunteer.city}</p>
-                                <p><strong>Skills:</strong> {volunteer.skills.join(', ')}</p>
-                                <p><strong>Availability:</strong> {volunteer.availability.join(', ')}</p>
-                            </div>
-                        ) : null;
-                    })()
+                    <VolunteerDetails
+                        volunteer={volunteers.find(v => v.id === selectedVolunteerId)!}
+                    />
                 ) : (
                     <p>Select a volunteer from the list</p>
                 )}
             </div>
+           
+
+
         </div>
     )
 }
