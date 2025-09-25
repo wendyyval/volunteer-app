@@ -1,6 +1,7 @@
 import { Link, useLocation} from "react-router-dom";
 import type {ReactNode} from "react";
 import hero from "./assets/64646.jpg";
+import NotifTestPanel from "./pages/NotifTestPanel"; 
 
 
 export default function AuthLayout({children}: {children: ReactNode}){
@@ -58,7 +59,7 @@ export default function AuthLayout({children}: {children: ReactNode}){
                                 Create Account
                             </Link>
                 </div>
-
+                    <NotifTestPanel />
                     {children}
                     </div>
             </div>
