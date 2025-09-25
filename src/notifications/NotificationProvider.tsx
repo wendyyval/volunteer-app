@@ -1,4 +1,5 @@
-import { createContext, useContext, useMemo, useState, ReactNode, useEffect } from "react";
+import { createContext, useContext, useMemo, useState, useEffect} from "react";
+import type { ReactNode } from "react";
 import type {Notice} from "./notify";
 import { toastify } from "./notify";
 
@@ -9,11 +10,12 @@ type Ctx = {
     markRead: (id:string) => void;
     clear: () => void;
 };
+type ProviderProps = {children: ReactNode};
 
 const NotificationCtx = createContext<Ctx | null>(null);
 const LS_KEY = "hh-notifications";
 
-export function NotificationProvider({children}: {children: ReactNode}){
+export function NotificationProvider({children}: ProviderProps){
     const [notices, setNotices] = useState<Notice[]>(() =>{
         try {return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { return [];}
     });
