@@ -230,9 +230,9 @@ function VolunteerList() {
                 </div>
             </div>
 
-             {/*Right panel: placeholder */}
-             {/*show selected volunteer details */}
-            <div className="details-panel">
+            {/*Right panel: placeholder */}
+            {/*show selected volunteer details */}
+            <div className="details-container">
                 {selectedVolunteerId ? (
                     <VolunteerDetails
                         volunteer={volunteers.find(v => v.id === selectedVolunteerId)!}
@@ -241,7 +241,7 @@ function VolunteerList() {
                     <p>Select a volunteer from the list</p>
                 )}
             </div>
-           
+
 
 
         </div>
@@ -249,7 +249,6 @@ function VolunteerList() {
 }
 
 export default VolunteerList
-
 
 
 

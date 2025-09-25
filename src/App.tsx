@@ -1,4 +1,4 @@
-import VolunteerList from './VolunteerList'
+﻿import VolunteerList from './VolunteerList'
 
 function App() {
     return (
@@ -10,7 +10,6 @@ function App() {
 }
 
 export default App
-
 
 
 

@@ -33,15 +33,17 @@
     .volunteer-panel .volunteer-item:hover {
         background-color: #716d6d;
     }
-    
+
 
     .volunteer-panel .volunteer-item.selected {
         background-color: #2b65a4;
         font-weight: bold;
     }
 
-    
-    {/* Volunteer Details panel */}
+
+{ /* Volunteer Details panel */
+}
+/*
 .details-panel {
     position: absolute;
     width: 800px;
@@ -52,8 +54,21 @@
     padding: 1rem;
     height: 500px;
     overflow-y: auto;
-
+}*/
+.details-container {
+    position: absolute;
+    width: 800px;
+    top: 210px;
+    left: 1000px;
+    flex: 2;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    height: 400px;
+    overflow-y: auto;
+    background-color: #fff; /* make sure background is visible */
+    color: #000;
 }
+
 
 
 
@@ -87,5 +102,3 @@
         font-weight: bold;
         border-color: #0077cc;
     }
-
-
