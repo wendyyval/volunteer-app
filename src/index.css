@@ -226,3 +226,232 @@ body{margin: 0;}
 
  .form-stack{ display: grid; gap: 20px;}
 
+.profile-shell {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    radial-gradient(900px 500px at -10% -10%, #4f46e5 0%, transparent 60%),
+    radial-gradient(700px 400px at 110% 110%, #a855f7 0%, transparent 60%),
+    linear-gradient(to bottom, #0e0f14, #0f172a);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, 
+               "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+.profile-frame {
+  display: flex;
+  width: 80%;
+  height: 80vh;
+  background: linear-gradient(180deg, var(--card), rgba(18,19,28,0.96));
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;  
+  isolation: isolate;  
+  box-shadow: 0 40px 80px rgba(0,0,0,.45),
+              0 0 0 1px rgba(255,255,255,.02) inset;
+}
+
+.profile-frame::before {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  background:
+    radial-gradient(110% 70% at 60% 0%, rgba(124,92,255,.35), transparent 60%),
+    radial-gradient(110% 60% at 30% 70%, rgba(56,189,248,.18), transparent 60%);
+  filter: blur(28px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.profile-frame::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 30%; 
+  width: 2px;  
+  background: 
+    linear-gradient(to bottom, transparent 0%, rgba(124,92,255,0.4) 50%, transparent 100%);
+  box-shadow: 0 0 20px rgba(124,92,255,0.4); 
+  pointer-events: none;
+  border-radius: 1px; 
+}
+
+.profile-left {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.avatar-section {
+  width: 100%;
+  aspect-ratio: 1 / 1; 
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-placeholder {
+  width: 90%;
+  height: 90%;
+  background-color: #aeb2b9;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.avatar-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.bottom-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;  
+  justify-content: flex-start;  
+  gap: 10px;
+  padding: 8px;
+  align-self: flex-start; 
+  width: 100%;
+}
+
+.avatar-option {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: border 0.2s;
+}
+
+.avatar-option.selected {
+  border-color: var(--primary);
+}
+
+.profile-right {
+  width: 70%;
+  padding: 2rem;
+  overflow: auto;  
+}
+
+.profile-form-container {
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+}
+
+.profile-form-heading {
+  font-size: 30px;     
+  line-height: 1.1;          
+  font-weight: 700;           
+  letter-spacing: -0.02em;   
+  margin-bottom: 0.25rem;
+  color: var(--text);
+  padding: 0.25rem 0.5rem; 
+  border-radius: 4px;
+  margin-top: -20px; 
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  background: transparent;
+  padding: 1rem;
+  border-radius: 8px;
+  transform: translateX(-60px);
+}
+
+.profile-field {
+  display: grid;
+  grid-template-columns: 120px 1fr; 
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.10rem;
+}
+
+.profile-field label {
+  color: #bfc4d0; 
+  font-weight: 500;
+  padding: 2px 4px;
+  border-radius: 4px;
+  text-align: right;
+}
+
+.profile-field input {
+  flex: 1;  
+  width: auto; 
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-size: 16px;
+  transition: border-color .15s, box-shadow .15s;
+  box-shadow: 0 1px 0 rgba(255,255,255,.03) inset;
+}
+
+.profile-field select {
+    background-color: rgba(255, 255, 255, 0.06); 
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 6px 10px;
+    color: rgb(212, 212, 212);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+    appearance: none; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.profile-field select option {
+    background-color: white; 
+    color: black; 
+}
+
+.profile-field input::placeholder {
+  color: rgba(229, 231, 235, .55);
+  opacity: 1;
+}
+
+.profile-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 
+    0 0 0 3px var(--ring), 
+    0 0 28px rgba(124, 92, 255, .25);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-submit {
+  background: linear-gradient(180deg, var(--primary), var(--primary-600));
+  color: white;
+  margin-top: 8px;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter .15s, box-shadow .15s, transform .02s;
+  box-shadow: 0 10px 32px rgba(124,92,255,.28);
+}
+
+.profile-submit:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 16px 44px rgba(124, 92, 255, .38);
+}
+
+.profile-submit:active {
+  transform: translateY(1px);
+}
