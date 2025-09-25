@@ -371,7 +371,7 @@ body{margin: 0;}
   background: transparent;
   padding: 1rem;
   border-radius: 8px;
-  transform: translateX(-60px);
+  transform: translateX(-30px);
 }
 
 .profile-field {
