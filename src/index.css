@@ -15,7 +15,7 @@ body{margin: 0;}
   --primary-600: #6c5cff;
   --ring: rgba(124, 92, 255, .35);
 }
-
+/*page background*/
 .auth-shell{
   min-height: 100%;
   background:
@@ -25,7 +25,7 @@ body{margin: 0;}
   color: var(--text);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
 }
-
+/*2-panel card*/
 .auth-frame{
   max-width: 1000px;
   width: 100%;
@@ -39,6 +39,7 @@ body{margin: 0;}
   box-shadow: 0 40px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.02) inset;
 }
 
+/*middle divider*/
 @media (min-width: 768px){
   .auth-frame{
     grid-template-columns: 1fr 1fr;
@@ -63,7 +64,7 @@ body{margin: 0;}
     padding-bottom: 32px;
   }
 }
-
+/*thin gradient line*/
 .auth-frame::after{
     content:"";
     position: absolute;
@@ -74,6 +75,7 @@ body{margin: 0;}
     pointer-events: none;
   }
 
+  /*left-visual*/
 .auth-visual{
   position:relative; min-height: 560px;
 }
@@ -92,7 +94,7 @@ body{margin: 0;}
     linear-gradient(90deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,0) 30%);
   pointer-events:none;
 }
-
+/*right panel*/
 .auth-form{
   position: relative;
   padding: 24px;
@@ -100,7 +102,7 @@ body{margin: 0;}
   isolation: isolate;
 
 }
-
+  /*glow behind form*/
 .auth-form::before{
   content:"";
   position: absolute;
@@ -114,6 +116,7 @@ body{margin: 0;}
   opacity: .9;
 }
 
+/*inner frame around image*/
 .visual-frame{
   height: 100%;
   padding: 16px;                 
@@ -131,7 +134,7 @@ body{margin: 0;}
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(6px) saturate(120%);
 }
-
+/*typography inside right panel*/
 .auth-form h1{
   font-size: 28px;
   line-height: 1.1;
@@ -143,6 +146,8 @@ body{margin: 0;}
 .auth-form label{
   color: var(--muted);
 }
+
+/*auth tabs, sign in / create (pill container) */
 .auth-tabs{
   display:grid; grid-auto-flow:column; gap:10px;
   background: rgba(255,255,255,.06);
@@ -161,6 +166,7 @@ body{margin: 0;}
 .auth-tab:hover {background: rgba(255, 255, 255, 0.08);color: #eef;}
 .auth-tab.is-active {background: var(--primary);color: #fff;}
 
+/*form input*/
 .input-modern{
   width: 100%;
   padding: 14px 16px;
@@ -187,7 +193,7 @@ body{margin: 0;}
   background: rgba(255, 255, 255, 0.08);
 }
 
-
+/*submit button*/
 .btn-primary{
   background: linear-gradient(180deg, var(--primary), var(--primary-600));
   color: white;
@@ -224,5 +230,6 @@ body{margin: 0;}
   animation-delay: 4s;
  }
 
+ /*stack util*/
  .form-stack{ display: grid; gap: 20px;}
 
