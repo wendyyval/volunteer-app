@@ -241,10 +241,9 @@ function VolunteerList() {
                     <p>Select a volunteer from the list</p>
                 )}
             </div>
-
-
-
         </div>
+       
+
     )
 }
 

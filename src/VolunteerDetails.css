@@ -4,6 +4,10 @@
     margin: 0.5rem 0 1rem 0;
 }
 
+    .tags-container strong {
+        margin-right: 0.5rem; /* space between "Skills:" and first tag */
+    }
+
 .tag {
     display: inline-block;
     background-color: #a0d8ff;
@@ -39,7 +43,7 @@
     flex: 2;
     border: 1px solid #ccc;
     padding: 1rem 1.5rem;
-    height: 350px; /* keep fixed height if desired */
+    height: 250px; /* keep fixed height if desired */
     overflow: hidden; /* remove vertical scroll */
     background-color: #fff;
     color: #000;

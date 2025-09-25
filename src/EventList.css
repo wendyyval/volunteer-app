@@ -1,0 +1,30 @@
+﻿
+.event-panel {
+    position: absolute;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    height: 700px; /* fixed height */
+    overflow-y: auto; /* enable vertical scroll if content exceeds height */
+    background-color: #302d2d;
+    left: 615px;
+    top: 210px;
+    width: 325px;
+    color: #ffffff;
+}
+
+.event-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    background-color: #e0f7ff; /* optional */
+    color: #000; /* make sure text is visible */
+}
+
+    .event-item:hover {
+        background-color: #e0f7ff;
+    }
+
+    .event-item.selected {
+        background-color: #a0d8ff;
+        font-weight: bold;
+    }

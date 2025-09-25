@@ -24,6 +24,7 @@ const VolunteerDetails: React.FC<Props> = ({ volunteer }) => {
 
             {/* Skills / Tags */}
             <div className="tags-container">
+                <strong>Skills:</strong>
                 {volunteer.skills.map(skill => (
                     <span key={skill} className="tag">{skill}</span>
                 ))}
