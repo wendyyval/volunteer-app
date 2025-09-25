@@ -6,12 +6,15 @@ import App from "./App.tsx"
 import { BrowserRouter } from "react-router-dom"
 import "./index.css";
 import { Toaster } from "react-hot-toast";
+import { NotificationProvider } from "./notifications/NotificationProvider";
 
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <NotificationProvider>
+        <App />
+      </NotificationProvider>
     </BrowserRouter>
     <Toaster
       position="top-center"

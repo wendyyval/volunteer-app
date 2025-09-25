@@ -14,8 +14,9 @@ body{margin: 0;}
   --primary: #7c6cff;     
   --primary-600: #6c5cff;
   --ring: rgba(124, 92, 255, .35);
+  color-scheme: dark;
 }
-
+/*page background*/
 .auth-shell{
   min-height: 100%;
   background:
@@ -25,7 +26,7 @@ body{margin: 0;}
   color: var(--text);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
 }
-
+/*2-panel card*/
 .auth-frame{
   max-width: 1000px;
   width: 100%;
@@ -39,6 +40,7 @@ body{margin: 0;}
   box-shadow: 0 40px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.02) inset;
 }
 
+/*middle divider*/
 @media (min-width: 768px){
   .auth-frame{
     grid-template-columns: 1fr 1fr;
@@ -63,7 +65,7 @@ body{margin: 0;}
     padding-bottom: 32px;
   }
 }
-
+/*thin gradient line*/
 .auth-frame::after{
     content:"";
     position: absolute;
@@ -74,6 +76,7 @@ body{margin: 0;}
     pointer-events: none;
   }
 
+  /*left-visual*/
 .auth-visual{
   position:relative; min-height: 560px;
 }
@@ -92,7 +95,7 @@ body{margin: 0;}
     linear-gradient(90deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,0) 30%);
   pointer-events:none;
 }
-
+/*right panel*/
 .auth-form{
   position: relative;
   padding: 24px;
@@ -100,7 +103,7 @@ body{margin: 0;}
   isolation: isolate;
 
 }
-
+  /*glow behind form*/
 .auth-form::before{
   content:"";
   position: absolute;
@@ -114,6 +117,7 @@ body{margin: 0;}
   opacity: .9;
 }
 
+/*inner frame around image*/
 .visual-frame{
   height: 100%;
   padding: 16px;                 
@@ -131,7 +135,7 @@ body{margin: 0;}
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(6px) saturate(120%);
 }
-
+/*typography inside right panel*/
 .auth-form h1{
   font-size: 28px;
   line-height: 1.1;
@@ -143,6 +147,8 @@ body{margin: 0;}
 .auth-form label{
   color: var(--muted);
 }
+
+/*auth tabs, sign in / create (pill container) */
 .auth-tabs{
   display:grid; grid-auto-flow:column; gap:10px;
   background: rgba(255,255,255,.06);
@@ -161,6 +167,7 @@ body{margin: 0;}
 .auth-tab:hover {background: rgba(255, 255, 255, 0.08);color: #eef;}
 .auth-tab.is-active {background: var(--primary);color: #fff;}
 
+/*form input*/
 .input-modern{
   width: 100%;
   padding: 14px 16px;
@@ -187,7 +194,7 @@ body{margin: 0;}
   background: rgba(255, 255, 255, 0.08);
 }
 
-
+/*submit button*/
 .btn-primary{
   background: linear-gradient(180deg, var(--primary), var(--primary-600));
   color: white;
@@ -224,5 +231,138 @@ body{margin: 0;}
   animation-delay: 4s;
  }
 
+ /*stack util*/
  .form-stack{ display: grid; gap: 20px;}
+
+/*for volunteerhistory*/
+
+select.input-modern option{
+  background-color: #0b1220;
+  color: var(--text);
+}
+ .page-shell{
+  background:
+    radial-gradient(900px 500px at -10% -10%, #4f46e5 0%, transparent 60%),
+    radial-gradient(700px 400px at 110% 110%, #a855f7 0%, transparent 60%),
+    linear-gradient(to bottom, var(--bg-1), var(--bg-2));
+  color: var(--text);
+  min-height: 100%;
+ }
+ 
+ .page-frame{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 32px;
+ }
+ .panel-card{
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px) saturate(120%);
+  overflow: hidden;
+ }
+ .history-header{
+  padding: 28px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ }
+
+ @media (max-width: 640px){
+  .history-header{padding: 20px 18px;}
+ }
+ .table-glass{
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 0;
+ }
+ .table-glass table{
+  width: 100%;
+  /*table-layout: fixed;*/
+  border-collapse: separate;
+  border-spacing: 0;
+ }
+
+ .table-glass th, .table-glass td {
+  padding: 12px 16px;
+ }
+
+ .table-glass thead button{
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font: inherit;
+  padding: 6px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+ }
+ .table-glass thead button::hover{
+  background: rgba(255, 255, 255, 0.06);
+ }
+  /*pills*/
+ .chip{
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+ }
+ .badge{
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255, 255, 255, 0.06);
+ }
+/*skills row + wrapping*/
+.skill-list{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  line-height: 1;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+
+.chip:hover{
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.table-glass thead tr{
+  /*border-bottom: 2px solid rgba(255, 255, 255, 0.18);*/
+  position: relative;
+}
+.table-glass thead tr::after{
+  content: "";
+  position: absolute;
+  left: 0; right: 0;bottom: -1px;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent, rgba(255, 255, 255, 0.25), transparent);
+  pointer-events: none;
+}
+
 
