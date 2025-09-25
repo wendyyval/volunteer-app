@@ -14,6 +14,7 @@ body{margin: 0;}
   --primary: #7c6cff;     
   --primary-600: #6c5cff;
   --ring: rgba(124, 92, 255, .35);
+  color-scheme: dark;
 }
 /*page background*/
 .auth-shell{
@@ -232,4 +233,136 @@ body{margin: 0;}
 
  /*stack util*/
  .form-stack{ display: grid; gap: 20px;}
+
+/*for volunteerhistory*/
+
+select.input-modern option{
+  background-color: #0b1220;
+  color: var(--text);
+}
+ .page-shell{
+  background:
+    radial-gradient(900px 500px at -10% -10%, #4f46e5 0%, transparent 60%),
+    radial-gradient(700px 400px at 110% 110%, #a855f7 0%, transparent 60%),
+    linear-gradient(to bottom, var(--bg-1), var(--bg-2));
+  color: var(--text);
+  min-height: 100%;
+ }
+ 
+ .page-frame{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 32px;
+ }
+ .panel-card{
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px) saturate(120%);
+  overflow: hidden;
+ }
+ .history-header{
+  padding: 28px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ }
+
+ @media (max-width: 640px){
+  .history-header{padding: 20px 18px;}
+ }
+ .table-glass{
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 0;
+ }
+ .table-glass table{
+  width: 100%;
+  /*table-layout: fixed;*/
+  border-collapse: separate;
+  border-spacing: 0;
+ }
+
+ .table-glass th, .table-glass td {
+  padding: 12px 16px;
+ }
+
+ .table-glass thead button{
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font: inherit;
+  padding: 6px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+ }
+ .table-glass thead button::hover{
+  background: rgba(255, 255, 255, 0.06);
+ }
+  /*pills*/
+ .chip{
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+ }
+ .badge{
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255, 255, 255, 0.06);
+ }
+/*skills row + wrapping*/
+.skill-list{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  line-height: 1;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+
+.chip:hover{
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.table-glass thead tr{
+  /*border-bottom: 2px solid rgba(255, 255, 255, 0.18);*/
+  position: relative;
+}
+.table-glass thead tr::after{
+  content: "";
+  position: absolute;
+  left: 0; right: 0;bottom: -1px;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent, rgba(255, 255, 255, 0.25), transparent);
+  pointer-events: none;
+}
+
 

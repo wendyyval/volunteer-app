@@ -1,7 +1,7 @@
 import { Link, useLocation} from "react-router-dom";
 import type {ReactNode} from "react";
 import hero from "./assets/64646.jpg";
-import NotifTestPanel from "./pages/NotifTestPanel"; 
+{/*import NotifTestPanel from "./pages/NotifTestPanel"; uncomment along with bttm comment to check notif system*/} 
 
 
 export default function AuthLayout({children}: {children: ReactNode}){
@@ -59,7 +59,7 @@ export default function AuthLayout({children}: {children: ReactNode}){
                                 Create Account
                             </Link>
                 </div>
-                    <NotifTestPanel />
+                    {/*<NotifTestPanel /> uncomment to check notif system is working*/}
                     {children}
                     </div>
             </div>
