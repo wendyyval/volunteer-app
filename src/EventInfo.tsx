@@ -61,3 +61,4 @@ const EventInfo: React.FC<Props> = ({ event }) => {
 
 export default EventInfo;
 
+

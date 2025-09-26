@@ -19,8 +19,13 @@ interface Props {
 const VolunteerDetails: React.FC<Props> = ({ volunteer }) => {
     return (
         <div className="details-panel">
-            {/* Name */}
-            <h2>{volunteer.name}</h2>
+            {/* Header with Name and new Button */}
+            <div className="header-with-button">
+                {/* Name */}
+                <h2>{volunteer.name}</h2>
+                {/* New Button as requested */}
+                <button className="assign-button">Assign Selected Event</button>
+            </div>
 
             {/* Skills / Tags */}
             <div className="tags-container">
@@ -57,3 +62,5 @@ const VolunteerDetails: React.FC<Props> = ({ volunteer }) => {
 };
 
 export default VolunteerDetails;
+
+

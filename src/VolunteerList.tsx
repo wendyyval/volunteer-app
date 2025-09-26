@@ -1,6 +1,6 @@
 ﻿import React, { useState } from 'react'
 import './VolunteerList.css'
-import VolunteerDetails from './VolunteerDetails';
+import VolunteerDetails from './VolunteerDetails'; // Corrected import
 
 
 // Sample volunteer data
@@ -242,13 +242,11 @@ function VolunteerList() {
                 )}
             </div>
         </div>
-       
+
 
     )
 }
 
 export default VolunteerList
-
-
 
 

@@ -1,4 +1,39 @@
 ﻿
+/* New styles for button and header alignment */
+.header-with-button {
+    display: flex;
+    justify-content: space-between; /* Push name to left, button to right */
+    align-items: center; /* Vertically align them */
+    margin-bottom: 1rem; /* Add some space below the header */
+}
+
+/* Reset default h2 margin in this panel for better vertical alignment */
+.details-panel h2 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.assign-button {
+    position: absolute;
+    left: 425px;
+    top: 109px;
+    padding: 0.5rem 1rem;
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    white-space: nowrap; /* Prevent button text from wrapping */
+    transition: background-color 0.2s;
+}
+
+    .assign-button:hover {
+        background-color: #005fa3;
+    }
+
+
+/* Existing styles below */
 
 .tags-container {
     margin: 0.5rem 0 1rem 0;
@@ -51,7 +86,6 @@
     display: flex;
     flex-direction: column;
 }
-
 
 
 .tags-container {
