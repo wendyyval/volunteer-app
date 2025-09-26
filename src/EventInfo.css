@@ -7,3 +7,15 @@
     background-color: #fff; /* white box */
     border: 1px solid #ccc; /* optional border */
 }
+
+
+.event-details-container {
+    position: absolute; /* allows repositioning using top/left */
+    top: 580px; /* change as needed */
+    left: 1000px; /* change as needed */
+    width: 832px; /* set desired width */
+    height: 292px; /* set desired height */
+    background-color: #fff; /* white box */
+    border: 1px solid #ccc; /* optional border */
+}
+

@@ -8,7 +8,7 @@
 .volunteer-panel {
     position: absolute;
     width: 500px;
-    top: 210px;
+    top: 140px;
     left: 50px;
     flex: 1;
     border: 1px solid #ccc;
@@ -62,7 +62,7 @@
 .details-container {
     position: absolute;
     width: 800px;
-    top: 210px;
+    top: 140px;
     left: 1000px;
     flex: 2;
     border: 1px solid #ccc;

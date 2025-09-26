@@ -1,7 +1,20 @@
 ﻿import React, { useState } from 'react';
-import './EventList.css'; // you can style it separately
+import './EventList.css';
+import EventInfo from './EventInfo'; // Import the detail component
 
-const events = [
+// Define Event interface locally
+interface Event {
+    id: number;
+    name: string;
+    description: string;
+    location: string;
+    requiredSkills: string[];
+    urgency: 'Low' | 'Medium' | 'High';
+    date: string; // ISO date string
+}
+
+// Define the Events array locally (renamed from 'Events' to 'events' for consistency with volunteer data)
+const events: Event[] = [
     {
         id: 1,
         name: 'Community Kitchen',
@@ -41,28 +54,40 @@ const events = [
 ];
 
 
-
 function EventList() {
+    // State to hold the ID of the currently selected event (Managed internally)
     const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
+    // Find the full event object based on the selected ID
+    const selectedEvent = events.find(event => event.id === selectedEventId);
+
     return (
-        <div className="event-panel">
-            <h3>Events</h3>
-            <div className="event-list">
-                {events.map(event => (
-                    <div
-                        key={event.id}
-                        className={`event-item ${selectedEventId === event.id ? 'selected' : ''}`}
-                        onClick={() => setSelectedEventId(event.id)}
-                    >
-                        <strong>{event.name}</strong>
-                        {/*<p>{event.description}</p>*/}
-                        {/*<p><strong>Location:</strong> {event.location}</p>*/}
-                        {/*<p><strong>Skills:</strong> {event.requiredSkills.join(', ')}</p>*/}
-                        {/*<p><strong>Urgency:</strong> {event.urgency}</p>*/}
-                        {/*<p><strong>Date:</strong> {event.date}</p>*/}
-                    </div>
-                ))}
+        <div className="dashboard-container">
+            {/* Left panel: event list */}
+            <div className="event-panel">
+                <h3>Events</h3>
+                <div className="event-list">
+                    {events.map(event => (
+                        <div
+                            key={event.id}
+                            className={`event-item ${selectedEventId === event.id ? 'selected' : ''}`}
+                            onClick={() => setSelectedEventId(event.id)}
+                        >
+                            <strong>{event.name}</strong>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Right panel: Event Details */}
+            <div className="event-details-container"> {/* Renamed class to avoid conflict */}
+                {selectedEvent ? (
+                    <EventInfo
+                        event={selectedEvent}
+                    />
+                ) : (
+                    <p className="event-info-placeholder">Select an event from the list to see details.</p>
+                )}
             </div>
         </div>
     );
