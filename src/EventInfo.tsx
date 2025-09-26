@@ -1,14 +1,13 @@
 ﻿import React from 'react';
 import './EventInfo.css';
 
-// Define the Event interface locally
 interface Event {
     name: string;
     description: string;
     location: string;
     requiredSkills: string[];
     urgency: 'Low' | 'Medium' | 'High';
-    date: string; // ISO date string
+    date: string; 
 }
 
 interface Props {
@@ -18,10 +17,8 @@ interface Props {
 const EventInfo: React.FC<Props> = ({ event }) => {
     return (
         <div className="details-panel">
-            {/* Event Name */}
             <h2>{event.name}</h2>
 
-            {/* Event Description */}
             <p>{event.description}</p>
 
             {/* Skills / Tags */}
@@ -50,7 +47,6 @@ const EventInfo: React.FC<Props> = ({ event }) => {
                     <p>{event.urgency}</p>
                 </div>
                 <div className="details-item">
-                    {/* Placeholder for future expansion or just display */}
                     <strong>Status:</strong>
                     <p>Open</p>
                 </div>

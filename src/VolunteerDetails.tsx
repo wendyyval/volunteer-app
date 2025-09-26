@@ -19,15 +19,12 @@ interface Props {
 const VolunteerDetails: React.FC<Props> = ({ volunteer }) => {
     return (
         <div className="details-panel">
-            {/* Header with Name and new Button */}
+           
             <div className="header-with-button">
-                {/* Name */}
                 <h2>{volunteer.name}</h2>
-                {/* New Button as requested */}
                 <button className="assign-button">Assign Selected Event</button>
             </div>
 
-            {/* Skills / Tags */}
             <div className="tags-container">
                 <strong>Skills:</strong>
                 {volunteer.skills.map(skill => (
@@ -35,7 +32,6 @@ const VolunteerDetails: React.FC<Props> = ({ volunteer }) => {
                 ))}
             </div>
 
-            {/* Horizontal line */}
             <hr className="details-divider" />
 
             {/* Volunteer Info Section */}
@@ -62,5 +58,7 @@ const VolunteerDetails: React.FC<Props> = ({ volunteer }) => {
 };
 
 export default VolunteerDetails;
+
+
 
 

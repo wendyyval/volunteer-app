@@ -5,6 +5,7 @@
     font-family: sans-serif;
 }
 
+{ /* Volunteer List panel */}
 .volunteer-panel {
     position: absolute;
     width: 500px;
@@ -13,7 +14,7 @@
     flex: 1;
     border: 1px solid #ccc;
     padding: 1rem;
-    height: 700px;
+    height: 750px;
     overflow-y: auto;
 }
 
@@ -47,54 +48,56 @@
     flex: 2;
     border: 1px solid #ccc;
     padding: 1rem 1.5rem;
-    height: 350px !important; /* let the height expand to fit content */
-    overflow: visible; /* no scrollbars */
-    background-color: #fff;
+    height: 350px !important; 
+    overflow: visible; 
+    background-color: #403e3e;
     color: #000;
     font-family: sans-serif;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* vertically center content */
-    align-items: flex-start; /* horizontal alignment, can be center if desired */
+    justify-content: center; 
+    align-items: flex-start; 
 }
 
 .details-container {
     position: absolute;
-    width: 800px;
+    width: 835px;
     top: 140px;
-    left: 1000px;
+    left: 985px;
     flex: 2;
-    border: 1px solid #ccc;
+    border: 3px solid var(--stroke); 
+    border-radius: 8px; 
+    background-color: var(--card); 
     padding: 1rem;
     height: 400px;
     overflow-y: auto;
-    background-color: #fff;
+    
     color: #000;
 }
 
 
 .dashboard-title {
     position: absolute;
-    top: 20px; /* move down from the top of the page */
-    left: 50px; /* move right from the left of the page */
+    top: 20px;
+    left: 50px; 
     font-size: 2rem;
-    color: #fff; /* optional styling */
+    color: #fff; 
 }
 
 .volunteer-item {
     padding: 1rem;
     margin-bottom: 1rem;
-    border: 1px solid #ccc; /* container border */
-    border-radius: 8px; /* rounded corners */
-    background-color: #f9f9f9; /* light background */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* subtle shadow */
+    border: 1px solid #ccc; 
+    border-radius: 8px; 
+    background-color: #f9f9f9; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
     cursor: pointer;
     transition: background 0.2s, transform 0.1s;
 }
 
     .volunteer-item:hover {
         background-color: #e0f7ff;
-        transform: scale(1.02); /* slight pop on hover */
+        transform: scale(1.02); 
     }
 
     .volunteer-item.selected {

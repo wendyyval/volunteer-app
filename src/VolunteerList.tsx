@@ -1,9 +1,8 @@
 ﻿import React, { useState } from 'react'
 import './VolunteerList.css'
-import VolunteerDetails from './VolunteerDetails'; // Corrected import
+import VolunteerDetails from './VolunteerDetails'; 
 
 
-// Sample volunteer data
 const volunteers = [
     {
         id: 1,
@@ -230,7 +229,6 @@ function VolunteerList() {
                 </div>
             </div>
 
-            {/*Right panel: placeholder */}
             {/*show selected volunteer details */}
             <div className="details-container">
                 {selectedVolunteerId ? (

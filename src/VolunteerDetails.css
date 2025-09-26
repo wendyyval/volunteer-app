@@ -1,13 +1,13 @@
 ﻿
-/* New styles for button and header alignment */
+
+
 .header-with-button {
     display: flex;
-    justify-content: space-between; /* Push name to left, button to right */
-    align-items: center; /* Vertically align them */
-    margin-bottom: 1rem; /* Add some space below the header */
+    justify-content: space-between;
+    align-items: center; 
+    margin-bottom: 1rem; 
 }
 
-/* Reset default h2 margin in this panel for better vertical alignment */
 .details-panel h2 {
     margin-top: 0;
     margin-bottom: 0;
@@ -24,7 +24,7 @@
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
-    white-space: nowrap; /* Prevent button text from wrapping */
+    white-space: nowrap; 
     transition: background-color 0.2s;
 }
 
@@ -33,14 +33,13 @@
     }
 
 
-/* Existing styles below */
 
 .tags-container {
     margin: 0.5rem 0 1rem 0;
 }
 
     .tags-container strong {
-        margin-right: 0.5rem; /* space between "Skills:" and first tag */
+        margin-right: 0.5rem; 
     }
 
 .tag {
@@ -78,8 +77,8 @@
     flex: 2;
     border: 1px solid #ccc;
     padding: 1rem 1.5rem;
-    height: 250px; /* keep fixed height if desired */
-    overflow: hidden; /* remove vertical scroll */
+    height: 250px; 
+    overflow: hidden; 
     background-color: #fff;
     color: #000;
     font-family: sans-serif;
@@ -89,12 +88,12 @@
 
 
 .tags-container {
-    margin: 0.5rem 0; /* remove extra bottom margin */
+    margin: 0.5rem 0; 
 }
 
 .details-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    width: 100%; /* ensure it fills the panel horizontally */
+    width: 100%; 
 }
