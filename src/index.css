@@ -234,6 +234,8 @@ body{margin: 0;}
  /*stack util*/
  .form-stack{ display: grid; gap: 20px;}
 
+ /* for profile */
+
 .profile-shell {
   min-height: 100vh;
   display: flex;
@@ -593,5 +595,232 @@ select.input-modern option{
     transparent, rgba(255, 255, 255, 0.25), transparent);
   pointer-events: none;
 }
+
+/* for EventManage */
+
+.event-frame {
+  display: flex;
+  width: 80%;
+  height: 80vh;
+  background: linear-gradient(180deg, var(--card), rgba(18,19,28,0.96));
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;  
+  isolation: isolate;  
+  box-shadow: 0 40px 80px rgba(0,0,0,.45),
+              0 0 0 1px rgba(255,255,255,.02) inset;
+}
+
+.event-frame::before {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  background:
+    radial-gradient(110% 70% at 60% 0%, rgba(124,92,255,.35), transparent 60%),
+    radial-gradient(110% 60% at 30% 70%, rgba(56,189,248,.18), transparent 60%);
+  filter: blur(28px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.event-frame::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 40%; 
+  width: 2px;  
+  background: 
+    linear-gradient(to bottom, transparent 0%, rgba(124,92,255,0.4) 50%, transparent 100%);
+  box-shadow: 0 0 20px rgba(124,92,255,0.4); 
+  pointer-events: none;
+  border-radius: 1px; 
+}
+
+.event-left {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.event-form-container {
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+}
+
+.event-form-heading {
+  font-size: 35px;     
+  line-height: 1.1;          
+  font-weight: 700;           
+  letter-spacing: -0.02em;   
+  margin-bottom: 0.25rem;
+  color: var(--text);
+  padding: 0.25rem 0.5rem; 
+  border-radius: 4px;
+  margin-top: -5px; 
+}
+
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  background: transparent;
+  padding: 1rem;
+  border-radius: 8px;
+  transform: translateX(-30px);
+}
+
+.event-field {
+  display: grid;
+  grid-template-columns: 120px 1fr; 
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.10rem;
+}
+
+.event-field label {
+  color: #bfc4d0; 
+  font-weight: 500;
+  padding: 2px 4px;
+  border-radius: 4px;
+  text-align: right;
+}
+
+.event-field input {
+  flex: 1;  
+  width: auto; 
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-size: 16px;
+  transition: border-color .15s, box-shadow .15s;
+  box-shadow: 0 1px 0 rgba(255,255,255,.03) inset;
+}
+
+.event-field select {
+    background-color: rgba(255, 255, 255, 0.06); 
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 6px 10px;
+    color: rgb(212, 212, 212);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+    appearance: none; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.event-field select option {
+    background-color: white; 
+    color: black; 
+}
+
+.event-field input::placeholder {
+  color: rgba(229, 231, 235, .55);
+  opacity: 1;
+}
+
+.event-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 
+    0 0 0 3px var(--ring), 
+    0 0 28px rgba(124, 92, 255, .25);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.event-right {
+  width: 60%;
+  padding: 2rem;
+  overflow: auto;
+}
+
+.event-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.event-card {
+  flex: 0 0 calc(50% - 16px);
+  min-width: 250px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.event-card-header {
+  background: linear-gradient(90deg, #7c5cff, #38bdf8);
+  color: white;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.event-card-content {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-card-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.event-card .delete-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  color: red;
+  border: none;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.event-card .delete-btn:hover {
+  transform: scale(1.2);
+}
+
+.description-box {
+  border: 1px solid rgba(0, 0, 0, 0.2); 
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px; 
+  background-color: #f9f9f9; 
+}
+
+
+
+
+
+
 
 
