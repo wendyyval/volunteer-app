@@ -1,0 +1,23 @@
+﻿.event-info-panel {
+    position: absolute;
+    top: 650px;
+    left: 1000px;
+    width: 832px;
+    height: 292px;
+    background-color: var(--card); 
+    border: 3px solid var(--stroke); 
+    border-radius: 8px; 
+}
+
+
+.event-details-container {
+    position: absolute;
+    top: 540px;
+    left: 1000px;
+    width: 805px;
+    height: 292px;
+    border: 3px solid var(--stroke); 
+    border-radius: 8px; 
+    background-color: var(--card); 
+}
+

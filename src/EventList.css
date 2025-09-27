@@ -1,0 +1,32 @@
+﻿
+.event-panel {
+    position: absolute;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    height: 750px;
+    overflow-y: auto;
+    background-color: #302d2d;
+    background: radial-gradient(900px 500px at -10% -10%, #4f46e5 0%, transparent 60%), radial-gradient(700px 400px at 110% 110%, #a855f7 0%, transparent 60%),
+    linear-gradient(to bottom, transparent, var(--bg-2));
+    left: 615px;
+    top: 140px;
+    width: 325px;
+    color: #ffffff;
+}
+
+.event-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    background-color: #e0f7ff; 
+    color: #000; 
+}
+
+    .event-item:hover {
+        background-color: #e0f7ff;
+    }
+
+    .event-item.selected {
+        background-color: #a0d8ff;
+        font-weight: bold;
+    }

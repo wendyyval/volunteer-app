@@ -1,22 +1,28 @@
-
-
-import {Routes, Route, Navigate} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import VolunteerList from "./VolunteerList";
+import EventList from "./EventList";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
-//import AdminEvents from "./pages/AdminEvents";
 import VolunteerHistory from "./pages/VolunteerHistory";
 
-export default function App(){
+export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} /> 
-      <Route path="/profile" element={<Profile />} /> 
-      {/*<Route path="/events/admin" element={<AdminEvents />} /> {/*to be created*/}
-      <Route path="/history" element={<VolunteerHistory />}/>
-      <Route path="*" element={<Navigate to="/history" replace />} />
-    </Routes>
+    <>
+      <div className="auth-shell">
+        <h1 className="dashboard-title">Volunteer Assignment Page</h1>
+        <VolunteerList />
+        <EventList />
+      </div>
+
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/history" element={<VolunteerHistory />} />
+        <Route path="*" element={<Navigate to="/history" replace />} />
+      </Routes>
+    </>
   );
 }
