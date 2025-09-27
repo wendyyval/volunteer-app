@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import { useState } from 'react';
 import './EventList.css';
 import EventInfo from './EventInfo'; 
 
