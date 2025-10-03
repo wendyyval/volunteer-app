@@ -4,13 +4,12 @@ import { registerSchema, loginSchema } from "./validation";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
+import { JWT_SECRET } from "./config/env";
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret"; // ok for assignment
-
-export const authRouter = Router();
+const router = Router();
 
 /** Register */
-authRouter.post("/register", async (req, res) => {
+router.post("/register", async (req, res) => {
   const parse = registerSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.format() });
 
@@ -27,7 +26,7 @@ authRouter.post("/register", async (req, res) => {
 });
 
 /** Login */
-authRouter.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   const parse = loginSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.format() });
 
@@ -42,8 +41,10 @@ authRouter.post("/login", async (req, res) => {
   return res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
 });
 
+export default router;
+
 /** Middleware to protect routes */
-export function requireAuth(req: any, res: any, next: any) {
+/*export function requireAuth(req: any, res: any, next: any) {
   const auth = req.headers.authorization?.split(" ")[1];
   if (!auth) return res.status(401).json({ error: "Missing token" });
   try {
@@ -54,4 +55,4 @@ export function requireAuth(req: any, res: any, next: any) {
   } catch {
     return res.status(401).json({ error: "Invalid token" });
   }
-}
+}*/

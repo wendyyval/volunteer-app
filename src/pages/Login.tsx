@@ -2,6 +2,7 @@ import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import AuthLayout from "../AuthLayout";
 
+
 export default function Login(){
     const nav = useNavigate();
     const [email, setEmail] = useState("");
@@ -9,23 +10,41 @@ export default function Login(){
     const [err, setErr] = useState("");
     const [loading, setLoading] = useState(false);
 
-    function onSubmit(e: React.FormEvent){
-        e.preventDefault();
-        setErr("");
-        if(!email || !password)
-            return setErr("Email and password are required");
-        if(!/\S+@\S+\.\S+/.test(email)){
-            return setErr("Email is invalid. Please enter a valid email address.");
+    async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr("");
+
+    // quick client-side checks
+    if (!email || !password) return setErr("Email and password are required");
+    if (!/\S+@\S+\.\S+/.test(email)) return setErr("Email is invalid. Please enter a valid email address.");
+    if (password.length < 6) return setErr("Password must be at least 6 characters long.");
+
+    setLoading(true);
+    try {
+        const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json().catch(() => ({} as any));
+
+        if (!res.ok) {
+        if (res.status === 401) return setErr("Invalid email or password.");
+        if (res.status === 400) return setErr("Please check your inputs and try again.");
+        return setErr(typeof data.error === "string" ? data.error : "Login failed.");
         }
-        if(password.length < 6){
-            return setErr("Password must be at least 6 characters long.");
-        }
-        setLoading(true);
-        setTimeout(()=>{
-            localStorage.setItem("token", "dev-token");
-            localStorage.setItem("role", email.includes("admin") ? "admin" : "volunteer");
-            nav("/profile");
-        }, 500); //simulate api call delay
+
+        // success -> save token & role, navigate
+        localStorage.setItem("token", data.token);
+        if (data.user?.role) localStorage.setItem("role", data.user.role);
+        // optional: toast.success("Welcome back!");
+        nav("/profile"); // or "/history" — can be changed
+    } catch {
+        setErr("Network error. Please try again.");
+    } finally {
+        setLoading(false);
+    }
     }
 
     return(

@@ -1,8 +1,8 @@
 // server/src/middleware/requireAuth.ts
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config/env";
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 
 function getToken(req: Request) {
   const h = req.headers.authorization;

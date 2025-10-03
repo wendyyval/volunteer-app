@@ -5,7 +5,8 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc -p .",
     "start": "node dist/index.js",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "test:ui": "vitest --ui --coverage"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -18,10 +19,15 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.6",
-    "supertest": "^7.0.0",
+    "@types/supertest": "^6.0.3",
+    "@vitest/coverage-v8": "^2.1.9",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.4",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2",
-    "vitest": "^2.0.5"
+    "vitest": "^2.1.9"
   }
 }

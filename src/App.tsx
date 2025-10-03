@@ -16,6 +16,7 @@ export default function App() {
       <Route path="/history" element={<VolunteerHistory />} />
       <Route path="/assign" element={<VolunteerAssign />} />
       <Route path="/manage" element={< EventManage/>} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

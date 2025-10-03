@@ -1,7 +1,10 @@
 import {useMemo, useState} from "react";
 import type { EventHistoryItem, ParticipationStatus } from "../types/event";
-import { mockHistory } from "../data/history";
+/*import { mockHistory } from "../data/history";*/
 
+import { useEffect} from "react";
+import { useNavigate } from "react-router-dom";
+import { authHeaders, clearAuth } from "../utils/auth";
 
 
 
@@ -19,52 +22,71 @@ const statusColors: Record<ParticipationStatus, string> ={
 };
 
 export default function VolunteerHistory(){
+    const nav = useNavigate();
+    const [rows, setRows] = useState<EventHistoryItem[]>([]);   //from API
+    const [loading, setLoading] = useState(true);
+    const [err, setErr] = useState("");
+
     const [query, setQuery] = useState<string>("");
     const [status, setStatus] = useState<ParticipationStatus | "All">("All");
     const [sortKey, setSortKey] = useState<SortKey>("eventDate");
     const [sortDir, setSortDir] = useState<SortDir>("desc");
 
-    const filtered = useMemo(() => {
-        let data = [...mockHistory];
-    
+    // fetch history once (protected)
+    useEffect(() => {
+        (async () => {
+        try {
+            const res = await fetch("/api/history/me", { headers: authHeaders() });
+            if (res.status === 401) { clearAuth(); return nav("/login"); }
+            const data = await res.json().catch(() => []);
+            setRows(Array.isArray(data) ? data : []);
+        } catch {
+            setErr("Failed to load history.");
+        } finally {
+            setLoading(false);
+        }
+        })();
+    }, [nav]);
 
-        if (status != "All"){
-            data = data.filter(d => d.participationStatus === status);
+    // use rows instead of mockHistory
+    const filtered = useMemo(() => {
+        let data = [...rows];
+
+        if (status !== "All"){
+        data = data.filter(d => d.participationStatus === status);
         }
 
         if (query.trim()){
-            const q = query.toLowerCase();
-            data = data.filter(d =>
-                d.eventName.toLowerCase().includes(q) ||
-                d.location.toLowerCase().includes(q) ||
-                d.requiredSkills.join(",").toLowerCase().includes(q)
-            );
+        const q = query.toLowerCase();
+        data = data.filter(d =>
+            d.eventName.toLowerCase().includes(q) ||
+            d.location.toLowerCase().includes(q) ||
+            d.requiredSkills.join(",").toLowerCase().includes(q)
+        );
         }
 
         data.sort((a, b) => {
-            const va = a[sortKey];
-            const vb = b[sortKey];
-            if (sortKey === "eventDate"){
-                const da = new Date(String(va)).getTime();
-                const db = new Date(String(vb)).getTime();
-                return sortDir === "asc" ? da - db : db - da;
-            }
-
-            const sa = String(va).toLowerCase();
-            const sb = String(vb).toLowerCase();
-
-            if(sa < sb) return sortDir === "asc" ? -1:1;
-            if(sa > sb) return sortDir === "asc" ? 1:-1;
-            return 0;
+        const va = a[sortKey];
+        const vb = b[sortKey];
+        if (sortKey === "eventDate"){
+            const da = new Date(String(va)).getTime();
+            const db = new Date(String(vb)).getTime();
+            return sortDir === "asc" ? da - db : db - da;
+        }
+        const sa = String(va).toLowerCase();
+        const sb = String(vb).toLowerCase();
+        if (sa < sb) return sortDir === "asc" ? -1 : 1;
+        if (sa > sb) return sortDir === "asc" ? 1 : -1;
+        return 0;
         });
 
         return data;
-        }, [query, status, sortKey, sortDir]);
-        
-        function toggleSort(k: SortKey){
-            if(k === sortKey) setSortDir(d=> (d === "asc" ? "desc" : "asc"));
-            else {setSortKey(k); setSortDir("asc");}
-        }
+    }, [rows, query, status, sortKey, sortDir]);
+
+    function toggleSort(k: SortKey){
+        if (k === sortKey) setSortDir(d => d === "asc" ? "desc" : "asc");
+        else { setSortKey(k); setSortDir("asc"); }
+    }
 
         return(
             <div className="page-shell min-h-screen">
@@ -97,8 +119,23 @@ export default function VolunteerHistory(){
                                     ))}
                             </select>
                     </div>
-                </div>
+                    
+                    {/* Error */}
+                    {err && (
+                        <div className="mb-4 rounded-lg border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-rose-200">
+                        {err}
+                        </div>
+                    )}
 
+                    {/* Loading */}
+                    {loading ? (
+                        <div className="py-16 text-center opacity-80">Loading history…</div>
+                    ) : (
+                        <div className="table-glass overflow-x-auto rounded-2xl">
+                        </div>
+                    )}
+                </div>
+                
                 <div className="table-glass overflow-x-auto rounded-2xl">
                     <table className="min-w-full text-sm">
                         <thead className="sticky top-0 bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/5">
@@ -125,7 +162,7 @@ export default function VolunteerHistory(){
                                     <td className="py-3 px-4 font-medium">{item.eventName}</td>
                                     <td className="py-3 px-4">{formatDate(item.eventDate)}</td>
                                     <td className="py-3 px-4">{item.location}</td>
-                                    <td className="py-3 px-4">
+                                    <td className="py-3 px-4 skills-cell">
                                         <ul className="skill-list">
                                             {item.requiredSkills.map(s => (
                                                 <li key={s} className="chip chip-skill">{s}</li>
