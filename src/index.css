@@ -545,30 +545,27 @@ select.input-modern option {
 .skill-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.chip {
+.chip, .chip-skill {
   display: inline-block;
-  /*align-items: center;
-  gap: 6px;*/
   padding: 4px 8px;
   font-size: 12px;
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.06);
-  color: var(--text);
+  /*color: var(--text);
   line-height: 1;
-  white-space: nowrap;
-  /*transition: background .15s, border-color .15s, box-shadow .15s;*/
+  white-space: nowrap;*/
 }
 
-.chip-skill{
+/*.chip-skill{
   backdrop-filter: saturate(120%);
   box-shadow: 0 1px 10px rgba(124, 92, 255, 0.12);
-}
+}*/
 .chip:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.18);
