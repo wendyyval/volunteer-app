@@ -3,8 +3,11 @@ import type { EventHistoryItem, ParticipationStatus } from "../types/event";
 import { useNavigate } from "react-router-dom";
 import { handle401, fetchMyHistory, addMyHistory, seedMyHistory } from "../api/history";
 import toast from "react-hot-toast";
+import MainLayout from "../layouts/MainLayout";
 
-/** sort keys / directions */
+/* temp demo button for notifications */
+import { useLoadNotices } from "../notifications/loadFromApi";
+
 type SortKey = keyof Pick<EventHistoryItem, "eventName" | "eventDate" | "urgency" | "participationStatus" | "location">;
 type SortDir = "asc" | "desc";
 
@@ -19,6 +22,7 @@ const statusColors: Record<ParticipationStatus, string> = {
 
 export default function VolunteerHistory() {
   const nav = useNavigate();
+  const loadNotices = useLoadNotices();
 
   // server data
   const [rows, setRows] = useState<EventHistoryItem[]>([]);
@@ -47,13 +51,10 @@ export default function VolunteerHistory() {
     })();
   }, [nav]);
 
-  // derived table data
+  // sort/filter
   const filtered = useMemo(() => {
     let data = [...rows];
-
-    if (status !== "All") {
-      data = data.filter(d => d.participationStatus === status);
-    }
+    if (status !== "All") data = data.filter(d => d.participationStatus === status);
     if (query.trim()) {
       const q = query.toLowerCase();
       data = data.filter(d =>
@@ -93,7 +94,6 @@ export default function VolunteerHistory() {
         requiredSkills: ["Teamwork", "Lifting"],
         urgency: "Medium",
         participationStatus: "Registered",
-        // leave eventDate undefined => server defaults to today
       });
       if (handle401(res, () => nav("/login"))) return;
       if (!res.ok) {
@@ -116,7 +116,6 @@ export default function VolunteerHistory() {
         const err = await res.json().catch(() => ({}));
         return toast.error(typeof err.error === "string" ? err.error : "Seed failed");
       }
-      // re-fetch after seeding
       const re = await fetchMyHistory();
       if (!re.ok) return;
       const list = await re.json();
@@ -128,103 +127,103 @@ export default function VolunteerHistory() {
   }
 
   return (
-    <div className="page-shell min-h-screen">
-      <div className="page-frame">
-        <div className="panel-card p-6 md:p-8">
+    <MainLayout>
+      <div className="panel-card p-6 md:p-8">
+        {/* Header */}
+        <header className="history-header mb-6">
+          <h1 className="history-title">Volunteer History</h1>
+          <p className="history-sub">All events you've participated in.</p>
+        </header>
 
-          {/* Header */}
-          <header className="history-header mb-6">
-            <h1 className="history-title">Volunteer History</h1>
-            <p className="history-sub">All events you've participated in.</p>
-          </header>
-
-          {/* Controls */}
-          <div className="flex flex-col md:flex-row md:items-center gap-3 mb-6">
-            <div className="flex-1 flex gap-3">
-              <input
-                className="input-modern flex-1"
-                placeholder="Search via event, location, or skill..."
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-              />
-              <select
-                className="input-modern"
-                value={status}
-                onChange={e => setStatus(e.target.value as any)}
-              >
-                {["All", "Registered", "Confirmed", "Attended", "No-Show", "Cancelled", "Withdrawn"].map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex gap-2">
-              <button type="button" className="btn-primary" onClick={onAddSample}>+ Add sample</button>
-              <button type="button" className="btn-primary" onClick={onSeed}>Seed 2</button>
-            </div>
+        {/* Controls */}
+        <div className="flex flex-col md:flex-row md:items-center gap-3 mb-6">
+          <div className="flex-1 flex gap-3">
+            <input
+              className="input-modern flex-1"
+              placeholder="Search via event, location, or skill..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+            <select
+              className="input-modern"
+              value={status}
+              onChange={e => setStatus(e.target.value as any)}
+            >
+              {["All", "Registered", "Confirmed", "Attended", "No-Show", "Cancelled", "Withdrawn"].map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Content states */}
-          {loading && (
-            <div className="py-10 text-center opacity-75">Loading history…</div>
-          )}
-          {!loading && err && (
-            <div className="py-10 text-center error">{err}</div>
-          )}
-
-          {/* Table */}
-          {!loading && !err && (
-            <div className="table-glass overflow-x-auto rounded-2xl">
-              <table className="min-w-full text-sm">
-                <thead className="sticky top-0 bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/5">
-                  <tr className="border-b border-white/10">
-                    <Th label="Event"      onClick={() => toggleSort("eventName")}           active={sortKey==="eventName"}           dir={sortDir} />
-                    <Th label="Date"       onClick={() => toggleSort("eventDate")}           active={sortKey==="eventDate"}           dir={sortDir} />
-                    <Th label="Location"   onClick={() => toggleSort("location")}            active={sortKey==="location"}            dir={sortDir} />
-                    <th className="py-3 px-4">Required Skills</th>
-                    <Th label="Urgency"    onClick={() => toggleSort("urgency")}             active={sortKey==="urgency"}             dir={sortDir} />
-                    <Th label="Status"     onClick={() => toggleSort("participationStatus")} active={sortKey==="participationStatus"} dir={sortDir} />
-                    <th className="py-3 px-4">Hours</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.length === 0 && (
-                    <tr>
-                      <td colSpan={7} className="py-10 px-4 text-center opacity-75">
-                        No history yet. Use “Add sample” or “Seed 2” to create some rows.
-                      </td>
-                    </tr>
-                  )}
-
-                  {filtered.map(item => (
-                    <tr key={item.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                      <td className="py-3 px-4 font-medium">{item.eventName}</td>
-                      <td className="py-3 px-4">{formatDate(item.eventDate)}</td>
-                      <td className="py-3 px-4">{item.location}</td>
-                      <td className="py-3 px-4">
-                        <ul className="skill-list">
-                          {item.requiredSkills.map(s => (
-                            <li key={s} className="chip chip-skill">{s}</li>
-                          ))}
-                        </ul>
-                      </td>
-                      <td className="py-3 px-4">{item.urgency}</td>
-                      <td className="py-3 px-4">
-                        <span className={`inline-block rounded-full border px-2 py-0.5 text-xs ${statusColors[item.participationStatus]}`}>
-                          {item.participationStatus}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">{item.hours ?? "-"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
+          <div className="flex gap-2">
+            <button type="button" className="btn-primary" onClick={onAddSample}>+ Add sample</button>
+            <button type="button" className="btn-primary" onClick={onSeed}>Seed 2</button>
+            {/* demo: pull unread notices */}
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => loadNotices({ unreadOnly: true, toast: true })}
+            >
+              Pull unread notices
+            </button>
+          </div>
         </div>
+
+        {/* Content states */}
+        {loading && <div className="py-10 text-center opacity-75">Loading history…</div>}
+        {!loading && err && <div className="py-10 text-center error">{err}</div>}
+
+        {/* Table */}
+        {!loading && !err && (
+          <div className="table-glass overflow-x-auto rounded-2xl">
+            <table className="min-w-full text-sm">
+              <thead className="sticky top-0 bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/5">
+                <tr className="border-b border-white/10">
+                  <Th label="Event"      onClick={() => toggleSort("eventName")}           active={sortKey==="eventName"}           dir={sortDir} />
+                  <Th label="Date"       onClick={() => toggleSort("eventDate")}           active={sortKey==="eventDate"}           dir={sortDir} />
+                  <Th label="Location"   onClick={() => toggleSort("location")}            active={sortKey==="location"}            dir={sortDir} />
+                  <th className="py-3 px-4">Required Skills</th>
+                  <Th label="Urgency"    onClick={() => toggleSort("urgency")}             active={sortKey==="urgency"}             dir={sortDir} />
+                  <Th label="Status"     onClick={() => toggleSort("participationStatus")} active={sortKey==="participationStatus"} dir={sortDir} />
+                  <th className="py-3 px-4">Hours</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="py-10 px-4 text-center opacity-75">
+                      No history yet. Use “Add sample” or “Seed 2” to create some rows.
+                    </td>
+                  </tr>
+                )}
+
+                {filtered.map(item => (
+                  <tr key={item.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td className="py-3 px-4 font-medium">{item.eventName}</td>
+                    <td className="py-3 px-4">{formatDate(item.eventDate)}</td>
+                    <td className="py-3 px-4">{item.location}</td>
+                    <td className="py-3 px-4">
+                      <ul className="skill-list">
+                        {item.requiredSkills.map(s => (
+                          <li key={s} className="chip chip-skill">{s}</li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="py-3 px-4">{item.urgency}</td>
+                    <td className="py-3 px-4">
+                      <span className={`inline-block rounded-full border px-2 py-0.5 text-xs ${statusColors[item.participationStatus]}`}>
+                        {item.participationStatus}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">{item.hours ?? "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-    </div>
+    </MainLayout>
   );
 }
 
