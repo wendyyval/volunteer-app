@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAuth, requireRole } from "../middleware/requireAuth";
+import { requireAuth } from "../middleware/requireAuth";
 import { z } from "zod";
 
 const router = Router();
