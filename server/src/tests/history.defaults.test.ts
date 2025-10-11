@@ -1,3 +1,4 @@
+/// <reference types="vitest/globals" />
 import request from "supertest";
 import { app, registerAndLogin } from "../tests/helpers";
 
@@ -7,7 +8,7 @@ describe("history defaults branch", () => {
 
     const res = await request(app).post("/api/history/me")
       .set("Authorization", `Bearer ${token}`)
-      // minimal valid payload: everything else defaults on the server
+      // min valid payload: everything else defaults on server
       .send({ participationStatus: "Registered", urgency: "Medium" })
       .expect(201);
 

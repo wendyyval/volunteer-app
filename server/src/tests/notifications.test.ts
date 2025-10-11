@@ -1,3 +1,4 @@
+/// <reference types="vitest/globals" />
 import request from "supertest";
 import { registerAndLogin, app } from "../tests//helpers";
 

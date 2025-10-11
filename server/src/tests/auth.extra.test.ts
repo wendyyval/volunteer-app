@@ -1,4 +1,5 @@
 /*zod val path, duplicate email branch, invalid password branch*/
+/// <reference types="vitest/globals" />
 import request from "supertest";
 import app from "../app";
 
