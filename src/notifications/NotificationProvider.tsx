@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, useState, useEffect} from "react";
 import type { ReactNode } from "react";
 import type {Notice} from "./notify";
 import { toastify } from "./notify";
+import { authHeaders } from "../utils/auth";
 
 type Ctx = {
     notices: Notice[];
@@ -28,8 +29,12 @@ export function NotificationProvider({children}: ProviderProps){
     };
 
     const markRead: Ctx["markRead"] = (id) => {
-        setNotices((prev) => prev.map(n => n.id === id ? { ...n, read: true } : n));
-    };
+    setNotices(prev => prev.map(n => (n.id === id ? { ...n, read: true } : n)));
+    fetch(`/api/notifications/me/${id}/read`, {
+      method: "POST",
+      headers: authHeaders(),
+    }).catch(() => {});
+  };
 
     const clear: Ctx["clear"] = () => setNotices([]);
 

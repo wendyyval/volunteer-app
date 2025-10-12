@@ -12,21 +12,41 @@ export default function Register(){
     const [err, setErr] = useState("");
     const [loading, setLoading] = useState(false);
 
-    function onSubmit(e: React.FormEvent){
-        e.preventDefault();
-        setErr("");
+    async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr("");
 
-        if(!/\S+@\S+\.\S+/.test(email)) return setErr("Please enter a valid email address.");
-        if(!email || !password){
-            return setErr("Email and password are required");
+    // client-side checks
+    if (!/\S+@\S+\.\S+/.test(email)) return setErr("Please enter a valid email address.");
+    if (!email || !password) return setErr("Email and password are required");
+    if (password.length < 6) return setErr("Password must be at least 6 characters long.");
+
+    setLoading(true);
+    try {
+        const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role: "volunteer" }),
+        });
+
+        // Try to parse server response
+        const data = await res.json().catch(() => ({} as any));
+
+        if (!res.ok) {
+        // Nice messages for common cases
+        if (res.status === 409) return setErr("This email is already registered.");
+        if (res.status === 400) return setErr("Please check your inputs and try again.");
+        return setErr(typeof data.error === "string" ? data.error : "Registration failed.");
         }
-        if(password.length < 6){
-            return setErr("Password must be at least 6 characters long.");
-        }
-        setLoading(true);
-        /*setTimeout(()=>{ alert("Account cretead! Please log in."); nav("/login");}, 500);*/
+
+        // success
         toast.success("Account created. Please sign in.");
         setTimeout(() => nav("/login"), 600);
+    } catch (err) {
+        setErr("Network error. Please try again.");
+    } finally {
+        setLoading(false);
+    }
     }
     return(
         <AuthLayout>
