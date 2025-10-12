@@ -43,16 +43,3 @@ router.post("/login", async (req, res) => {
 
 export default router;
 
-/** Middleware to protect routes */
-/*export function requireAuth(req: any, res: any, next: any) {
-  const auth = req.headers.authorization?.split(" ")[1];
-  if (!auth) return res.status(401).json({ error: "Missing token" });
-  try {
-    const decoded = jwt.verify(auth, JWT_SECRET) as { sub: string; role: string };
-    req.userId = decoded.sub;
-    req.userRole = decoded.role;
-    next();
-  } catch {
-    return res.status(401).json({ error: "Invalid token" });
-  }
-}*/

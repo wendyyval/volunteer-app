@@ -1,5 +1,5 @@
 import { authHeaders, clearAuth } from "../utils/auth";
-
+import { apiFetch } from "../utils/http";
 
 export type NewHistoryRow = {
     eventName?: string;
@@ -12,12 +12,12 @@ export type NewHistoryRow = {
 };
 
 export async function fetchMyHistory() {
-  const res = await fetch("/api/history/me", { headers: authHeaders() });
+  const res = await apiFetch("/api/history/me", { headers: authHeaders() });
   return res;
 }
 
 export async function addMyHistory(row: NewHistoryRow){
-    const res = await fetch("/api/history/me", {
+    const res = await apiFetch("/api/history/me", {
         method: "POST",
         headers: authHeaders({ "Content-Type": "application/json"}),
         body: JSON.stringify(row),
@@ -25,7 +25,7 @@ export async function addMyHistory(row: NewHistoryRow){
     return res;
 }
 export async function seedMyHistory() {
-  const res = await fetch("/api/history/seed", {
+  const res = await apiFetch("/api/history/seed", {
     method: "POST",
     headers: authHeaders(),
   });

@@ -23,5 +23,6 @@
 
     "types": ["react", "react-dom", "vite/client"]
   },
-  "include": ["src", "server/src/tests"]
+  "include": ["src"],
+  "exclude": ["server", "node_modules"]
 }
