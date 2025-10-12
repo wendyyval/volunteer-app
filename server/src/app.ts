@@ -7,7 +7,17 @@ import notificationsRouter from "./routes/notification";
 
 
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+const allowedOrigins = [
+  "http://localhost:5173", // local dev
+  "https://volunteer-kc7lcyy0b-wendy-valdezs-projects.vercel.app" // your deployed Vercel frontend
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
