@@ -2,12 +2,12 @@
   "name": "volunteer-server",
   "private": true,
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc -p .",
-    "start": "node dist/index.js",
-    "test": "vitest run --coverage",
-    "test:ui": "vitest --ui --coverage"
-  },
+  "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+  "build": "tsc -p .",
+  "start": "node dist/app.js",
+  "test": "vitest run --coverage",
+  "test:ui": "vitest --ui --coverage"
+},
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
