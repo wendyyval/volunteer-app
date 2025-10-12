@@ -2,12 +2,12 @@
   "name": "volunteer-server",
   "private": true,
   "scripts": {
-  "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-  "build": "tsc -p .",
-  "start": "node dist/app.js",
-  "test": "vitest run --coverage",
-  "test:ui": "vitest --ui --coverage"
-},
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "build": "tsc -p .",
+    "start": "node dist/app.js",
+    "test": "vitest run --coverage",
+    "test:ui": "vitest --ui --coverage"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -17,10 +17,11 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.23",
     "@types/jest": "^30.0.0",
-    "@types/jsonwebtoken": "^9.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.7.2",
     "@types/supertest": "^6.0.3",
     "@vitest/coverage-v8": "^2.1.9",
     "jest": "^30.2.0",
