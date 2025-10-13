@@ -2,7 +2,7 @@
   "name": "volunteer-server",
   "private": true,
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc -p .",
     "start": "node dist/app.js",
     "test": "vitest run --coverage",
