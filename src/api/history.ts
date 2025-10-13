@@ -4,7 +4,7 @@ import { apiFetch } from "../utils/http";
 export type NewHistoryRow = {
     eventName?: string;
     eventDate?: string;
-    location?: String;
+    location?: string;
     requiredSkills?: string[];
     urgency?: "Low" | "Medium" | "High";
     participationStatus?: "Registered" | "Confirmed" | "Attended" | "No-Show" | "Cancelled" | "Withdrawn";
