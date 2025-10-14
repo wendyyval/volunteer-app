@@ -5,6 +5,7 @@ import ProfileLayout from "../ProfileLayout";
 import {useNavigate} from 'react-router-dom';
 import { fetchProfile, saveProfile } from "../api/profile";
 import type { ProfileData } from "../api/profile";
+import toast from "react-hot-toast"
 
 const skillOptions = [
   { value: "skill 1", label: "skill 1" },
@@ -71,9 +72,15 @@ export default function Profile() {
                 preferences,
                 availability: availability.map(d => d.toString()),
             };
-            await saveProfile(profile);
-            // alert("Profile saved!");
-            navigate("/history"); 
+            await toast.promise(
+                saveProfile(profile),
+                {
+                    loading: 'Saving profile...',
+                    success: 'Profile saved!',
+                    error: 'Failed to save profile',
+                }
+            );
+            navigate("/history");
         }
         catch (err){
             console.error(err);
