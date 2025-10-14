@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react';
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import ProfileLayout from "../ProfileLayout"; 
-//import {useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import { fetchProfile, saveProfile } from "../api/profile";
 import type { ProfileData } from "../api/profile";
 
@@ -16,7 +16,7 @@ const skillOptions = [
 ];
 
 export default function Profile() {
-    //const nav = useNavigate();
+    const navigate = useNavigate();
     const [fullName, setFullName] = useState("")
     const [address1, setAddress1] = useState("")
     const [address2, setAddress2] = useState("")
@@ -72,7 +72,8 @@ export default function Profile() {
                 availability: availability.map(d => d.toString()),
             };
             await saveProfile(profile);
-            alert("Profile saved!");
+            // alert("Profile saved!");
+            navigate("/history"); 
         }
         catch (err){
             console.error(err);
