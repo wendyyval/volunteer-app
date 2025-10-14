@@ -6,6 +6,8 @@ export async function apiFetch(path: string, init?: RequestInit) {
   const url = `${API_BASE}${path}`;
   console.log("→ API CALL:", url);
   const res = await fetch(url, init);
-  if (!res.ok) console.error("❌ API Error:", res.status, res.statusText);
+  if (!res.ok){
+    console.error("❌ API Error:", res.status, res.statusText);
+  }
   return res;
 }

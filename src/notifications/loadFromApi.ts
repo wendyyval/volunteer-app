@@ -14,7 +14,7 @@ export function useLoadNotices() {
       : "/api/notifications/me";
 
     const res = await apiFetch(path, { headers: authHeaders() });
-    const data = await res.json().catch(() => []);
+    const data = await res.json().catch();
 
     (data as any[]).forEach(n => {
       push(
@@ -26,7 +26,7 @@ export function useLoadNotices() {
           message: n.message,
         }),
         toast
-      );
+      )
     });
   };
 }
