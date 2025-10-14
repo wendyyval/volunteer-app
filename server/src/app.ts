@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./auth";
 import historyRoutes from "./routes/history";
-import profileRoutes from "./profile";
+import profileRoutes from "./routes/profile";
 import notificationsRouter from "./routes/notification";
 
 

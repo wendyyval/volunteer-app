@@ -19,8 +19,8 @@ export const profileSchema = z.object({
   state: z.string().length(2),
   zip: z.string().min(5).max(9),
   skills: z.array(z.string()).min(1),
-  preferences: z.string().optional(),
-  availability: z.array(z.string()) // ISO strings
+  preferences: z.string().max(500).optional(),
+  availability: z.array(z.string()).min(1) // ISO strings
 });
 
 export const eventSchema = z.object({

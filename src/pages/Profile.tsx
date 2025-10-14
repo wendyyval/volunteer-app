@@ -1,8 +1,10 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import ProfileLayout from "../ProfileLayout"; 
 //import {useNavigate} from 'react-router-dom';
+import { fetchProfile, saveProfile } from "../api/profile";
+import type { ProfileData } from "../api/profile";
 
 const skillOptions = [
   { value: "skill 1", label: "skill 1" },
@@ -26,14 +28,56 @@ export default function Profile() {
     const [availability, setAvailability] = useState<DateObject[]>([])
     const [err, setErr] = useState("");
 
-    function onSubmit(e: React.FormEvent){
+    useEffect(() => {
+        async function loadProfile() {
+            try {
+                const data = await fetchProfile();
+                if (data) {
+                setFullName(data.fullName);
+                setAddress1(data.address1);
+                setAddress2(data.address2 || "");
+                setCity(data.city);
+                setState(data.state);
+                setZipCode(data.zip);
+                setSkills(data.skills);
+                setPreferences(data.preferences || "");
+                setAvailability(data.availability.map((d: string) => new DateObject(d)));
+                }
+            } catch (err) {
+                console.error("Failed to fetch profile:", err);
+            }
+        }
+        loadProfile();
+    }, []);
+
+    
+    async function onSubmit(e: React.FormEvent){
         e.preventDefault();
         setErr("");
         if(!fullName || !address1 || !city || !state || !zipCode || skills.length == 0 || availability.length == 0)
             return setErr("Plase fill in all required fields.")
         if(zipCode.length < 5)
             return setErr("Zip code must be at least 5 characters long.")
-        alert("Profile saved!")
+        
+        try {
+            const profile: ProfileData = {
+                fullName,
+                address1,
+                address2,
+                city,
+                state,
+                zip: zipCode,
+                skills,
+                preferences,
+                availability: availability.map(d => d.toString()),
+            };
+            await saveProfile(profile);
+            alert("Profile saved!");
+        }
+        catch (err){
+            console.error(err);
+            setErr("Failed to save profile");
+        }
     }
     return (
         <ProfileLayout>
@@ -46,7 +90,8 @@ export default function Profile() {
                         <input 
                             placeholder="(required)"
                             value={fullName}
-                            onChange={e=>setFullName(e.target.value)}
+                            onChange={e=>setFullName(e.target.value.slice(0,50))}
+                            maxLength={50}
                         />
                     </div>
                     
@@ -55,7 +100,8 @@ export default function Profile() {
                         <input 
                             placeholder="(required)"
                             value={address1}
-                            onChange={e=>setAddress1(e.target.value)}
+                            onChange={e => setAddress1(e.target.value.slice(0, 100))}
+                            maxLength={100}
                         />
                     </div>
 
@@ -64,7 +110,8 @@ export default function Profile() {
                         <input 
                             placeholder="(optional)"
                             value={address2}
-                            onChange={e=>setAddress2(e.target.value)}
+                            onChange={e => setAddress2(e.target.value.slice(0, 100))}
+                            maxLength={100}
                         />
                     </div>
 
@@ -73,7 +120,8 @@ export default function Profile() {
                         <input 
                             placeholder="(required)"
                             value={city}
-                            onChange={e=>setCity(e.target.value)}
+                            onChange={e => setCity(e.target.value.slice(0, 100))}
+                            maxLength={100}
                         />
                     </div>
 
@@ -142,7 +190,8 @@ export default function Profile() {
                         <input 
                             placeholder="(required)"
                             value={zipCode}
-                            onChange={e=>setZipCode(e.target.value)}
+                            onChange={e => setZipCode(e.target.value.slice(0, 9))} // max 9 chars
+                            maxLength={9}
                         />
                     </div>
 
@@ -201,7 +250,8 @@ export default function Profile() {
                             className="input-modern"
                             placeholder="Write any specific preferences...(optional)"
                             value={preferences}
-                            onChange={(e) => setPreferences(e.target.value)}
+                            onChange={e => setPreferences(e.target.value.slice(0, 500))} // optional limit
+                            maxLength={500}
                         />
                     </div>
 

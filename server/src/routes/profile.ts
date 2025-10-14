@@ -1,16 +1,13 @@
 import { Router } from "express";
-import { db } from "./store";
-import { profileSchema } from "./validation";
-import { requireAuth } from "./middleware/requireAuth";
+import { db } from "../store";
+import { profileSchema } from "../validation";
+import { requireAuth } from "../middleware/requireAuth";
 
 const router = Router();
-
-
 
 function getUserId(req: any){
   return req.user?.sub ?? req.userId;
 }
-
 
 router.get("/me", requireAuth, (req: any, res) => {
   const userId = getUserId(req);
