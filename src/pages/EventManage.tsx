@@ -2,6 +2,7 @@ import { useState } from "react";
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import EventManageLayout from "../EventManageLayout";
+import { v4 as uuidv4 } from "uuid"; 
 
 const skillOptions = [
   { value: "skill 1", label: "skill 1" },
@@ -13,12 +14,13 @@ const skillOptions = [
 ];
 
 interface Event {
+  id: string;
   eventName: string;
   description: string;
   location: string;
   requiredSkills: string[];
   urgency: string;
-  eventDate: DateObject[];
+  eventDate: string[];
 }
 
 export default function EventManage() {
@@ -31,40 +33,117 @@ export default function EventManage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [err, setErr] = useState("");
 
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setErr("");
 
-    if (
-      !eventName ||
-      !description ||
-      !location ||
-      requiredSkills.length === 0 ||
-      !urgency ||
-      eventDate.length === 0
-    ) {
-      return setErr("Please fill in all required fields.");
+    async function sendEventToBackend(newEvent: Event) {
+        const response = await fetch("/api/events", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }, 
+            body: JSON.stringify(newEvent),
+        });
+
+        const savedEvent = await response.json();
+        setEvents([...events, savedEvent]);
     }
 
-    const newEvent: Event = {
-      eventName,
-      description,
-      location,
-      requiredSkills,
-      urgency,
-      eventDate,
-    };
+    async function fetchEventsFromBackend() {
+        const response = await fetch("/api/events");
+        const allEvents = await response.json();
+        console.log("Fetched events from backend:", allEvents);
+    }
 
-    setEvents([...events, newEvent]);
+    async function deleteEventFromBackend(eventId: string) {
+        const response = await fetch(`/api/events/${eventId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+        });
 
-    // Clear form
-    setEventName("");
-    setDescription("");
-    setLocation("");
-    setRequiredSkills([]);
-    setUrgency("");
-    setEventDate([]);
-  }
+        if (response.ok) {
+            setEvents(events.filter(event => event.id !== eventId));
+        } else {
+            console.error("Failed to delete event");
+        }
+    }
+
+
+    function onSubmit(e: React.FormEvent) {
+        e.preventDefault();
+          setErr("");
+
+          if (
+            !eventName ||
+            !description ||
+            !location ||
+            requiredSkills.length === 0 ||
+            !urgency ||
+            eventDate.length === 0
+          ) {
+            return setErr("Please fill in all required fields.");
+          }
+
+        const newEvent: Event = {
+            id: uuidv4(), // generate a unique ID for the event
+            eventName,
+            description,
+            location,
+            requiredSkills,
+            urgency,
+            eventDate: eventDate.map(d => d.format("MM/DD/YYYY"))
+        };
+
+        // call the backend function
+        sendEventToBackend(newEvent);
+
+        // optionally clear the form fields
+        setEventName("");
+        setDescription("");
+        setLocation("");
+        setRequiredSkills([]);
+        setUrgency("");
+        setEventDate([]);
+
+        // fetch all events to verify
+        fetchEventsFromBackend();
+    }
+
+
+
+
+
+
+  //function onSubmit(e: React.FormEvent) {
+  //  e.preventDefault();
+  //  setErr("");
+
+  //  if (
+  //    !eventName ||
+  //    !description ||
+  //    !location ||
+  //    requiredSkills.length === 0 ||
+  //    !urgency ||
+  //    eventDate.length === 0
+  //  ) {
+  //    return setErr("Please fill in all required fields.");
+  //  }
+
+  //  const newEvent: Event = {
+  //    eventName,
+  //    description,
+  //    location,
+  //    requiredSkills,
+  //    urgency,
+  //    eventDate,
+  //  };
+
+  //  setEvents([...events, newEvent]);
+
+  //  // Clear form
+  //  setEventName("");
+  //  setDescription("");
+  //  setLocation("");
+  //  setRequiredSkills([]);
+  //  setUrgency("");
+  //  setEventDate([]);
+  //}
 
   return (
     <EventManageLayout
@@ -198,8 +277,7 @@ export default function EventManage() {
               <button
                 className="delete-btn"
                 onClick={() => {
-                  const newEvents = events.filter((_, i) => i !== idx);
-                  setEvents(newEvents);
+                  deleteEventFromBackend(ev.id);
                 }}
               >
                 ×
@@ -278,7 +356,7 @@ export default function EventManage() {
                         display: "inline-block",
                       }}
                     >
-                      {d.format("MM/DD/YYYY")}
+                      {d}
                     </span>
                   ))}
                 </p>
