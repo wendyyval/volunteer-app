@@ -1,6 +1,20 @@
 ﻿import { useState } from 'react'
+import { useEffect } from "react";
 import './VolunteerList.css'
 import VolunteerDetails from './VolunteerDetails'; 
+import { v4 as uuidv4 } from "uuid"; 
+
+
+interface Volunteer {
+    id: string;
+    name: string;
+    city: string;
+    state: string;
+    zip: string;
+    skills: string[];
+    availability: string[]; 
+    preferences: string; 
+}
 
 
 const volunteers = [

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect } from "react"; 
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import EventManageLayout from "../EventManageLayout";
@@ -10,7 +11,7 @@ const skillOptions = [
   { value: "skill 3", label: "skill 3" },
   { value: "skill 4", label: "skill 4" },
   { value: "skill 5", label: "skill 5" },
-  { value: "skill 6", label: "skil 6" },
+  { value: "skill 6", label: "skill 6" },
 ];
 
 interface Event {
@@ -34,6 +35,9 @@ export default function EventManage() {
   const [err, setErr] = useState("");
 
 
+    
+
+
     async function sendEventToBackend(newEvent: Event) {
         const response = await fetch("/api/events", {
             method: "POST",
@@ -46,9 +50,16 @@ export default function EventManage() {
     }
 
     async function fetchEventsFromBackend() {
-        const response = await fetch("/api/events");
-        const allEvents = await response.json();
-        console.log("Fetched events from backend:", allEvents);
+
+        try {
+            const response = await fetch("/api/events");
+            const allEvents = await response.json();
+            setEvents(allEvents);
+            console.log("Fetched events from backend:", allEvents);
+        } catch (error) {
+            console.error("Error fetching events:", error);
+        }
+        
     }
 
     async function deleteEventFromBackend(eventId: string) {
@@ -106,9 +117,9 @@ export default function EventManage() {
     }
 
 
-
-
-
+    useEffect(() => {
+        fetchEventsFromBackend();
+    }, []);
 
   //function onSubmit(e: React.FormEvent) {
   //  e.preventDefault();
