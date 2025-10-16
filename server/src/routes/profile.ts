@@ -13,7 +13,8 @@ router.get("/me", requireAuth, (req: any, res) => {
   const userId = getUserId(req);
   const user = db.users.find(u => u.id === userId);
   if (!user) return res.status(404).json({ error: "User not found" });
-  return res.json(user.profile ?? null);
+  const profileWithId = user.profile ? { id: user.id, ...user.profile } : null;
+  return res.json(profileWithId);
 });
 
 router.post("/me", requireAuth, (req: any, res) => {
@@ -25,7 +26,8 @@ router.post("/me", requireAuth, (req: any, res) => {
   if (!user) return res.status(404).json({ error: "User not found" });
 
   user.profile = parse.data;
-  return res.status(200).json(user.profile);
+
+  return res.status(200).json({ id: user.id, ...user.profile });
 });
 
 export default router;

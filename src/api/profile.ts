@@ -2,6 +2,7 @@ import { authHeaders } from "../utils/auth";
 import { apiFetch } from "../utils/http";
 
 export type ProfileData = {
+  id?: string;
   fullName: string;
   address1: string;
   address2?: string;
