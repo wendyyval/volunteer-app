@@ -2,12 +2,13 @@
 import './EventInfo.css';
 
 interface Event {
-    name: string;
+    id: string;
+    eventName: string;
     description: string;
     location: string;
     requiredSkills: string[];
-    urgency: 'Low' | 'Medium' | 'High';
-    date: string; 
+    urgency: string;
+    eventDate: string[];
 }
 
 interface Props {
@@ -17,7 +18,7 @@ interface Props {
 const EventInfo: React.FC<Props> = ({ event }) => {
     return (
         <div className="details-panel">
-            <h2>{event.name}</h2>
+            <h2>{event.eventName}</h2>
 
             <p>{event.description}</p>
 
@@ -36,7 +37,7 @@ const EventInfo: React.FC<Props> = ({ event }) => {
             <div className="details-grid">
                 <div className="details-item">
                     <strong>Date:</strong>
-                    <p>{event.date}</p>
+                    <p>{event.eventDate}</p>
                 </div>
                 <div className="details-item">
                     <strong>Location:</strong>
