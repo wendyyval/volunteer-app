@@ -21,3 +21,14 @@ export type EventHistoryItem = {
     hours?: number;
 };
 
+
+export type Event = {
+    id: string;
+    name: string;
+    description: string;
+    location: string;
+    requiredSkills: string[];
+    urgency: Urgency;
+    eventDate: string;
+};
+

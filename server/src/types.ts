@@ -6,7 +6,7 @@ export type User = {
   passwordHash: string;
   role: Role;
   profile?: UserProfile;
-};
+}; 
 
 export type UserProfile = {
   fullName: string;
@@ -56,3 +56,15 @@ export type Notice = {
   ts: number;
   read?: boolean;
 };
+
+export type Volunteer = {
+    id: string;
+    name: string;
+    city: string;
+    state: string;
+    zip: string;
+    skills: string[];
+    availability: string[];
+    preferences: string; 
+};
+
