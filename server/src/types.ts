@@ -66,5 +66,6 @@ export type Volunteer = {
     skills: string[];
     availability: string[];
     preferences: string; 
+    currentEvent?: string;
 };
 

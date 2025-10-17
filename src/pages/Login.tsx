@@ -40,6 +40,7 @@ export default function Login(){
         // success -> save token & role, navigate
         localStorage.setItem("token", data.token);
         if (data.user?.role) localStorage.setItem("role", data.user.role);
+        if (data.user?.id) localStorage.setItem("userId", data.user.id);
         // optional: toast.success("Welcome back!");
         nav("/profile"); // or "/history" — can be changed
     } catch {

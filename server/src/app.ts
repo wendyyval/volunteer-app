@@ -41,6 +41,32 @@ app.post("/api/events", (req, res) => {
   res.status(201).json(newEvent);
 });
 
+// Route to get all users (volunteers)
+app.get("/api/users", (req, res) => {
+    console.log("Returning all users:", db.users);
+    res.json(db.users);
+});
+
+app.post("/api/users/saveprofile", (req, res) => {
+    const { userId, profile } = req.body;
+
+    if (!userId || !profile) {
+        return res.status(400).json({ error: "Missing userId or profile" });
+    }
+
+    // Find the user in your in-memory database
+    const user = db.users.find(u => u.id === userId);
+
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Assign the profile to the user
+    user.profile = profile;
+
+    return res.status(200).json({ message: "Profile updated successfully", user });
+});
+
 // Delete an event by ID
 app.delete("/api/events/:id", (req, res) => {
     const eventId = req.params.id;

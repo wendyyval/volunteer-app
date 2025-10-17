@@ -1,16 +1,7 @@
 ﻿import React from 'react';
 import './VolunteerDetails.css';
 
-interface Volunteer {
-    id: number;
-    name: string;
-    city: string;
-    state: string;
-    zip: string;
-    skills: string[];
-    availability: string[];
-    currentEvent?: string;
-}
+import type { Volunteer } from '../server/src/types'  // ✅ shared import
 
 interface Props {
     volunteer: Volunteer;
@@ -19,7 +10,7 @@ interface Props {
 const VolunteerDetails: React.FC<Props> = ({ volunteer }) => {
     return (
         <div className="details-panel">
-           
+
             <div className="header-with-button">
                 <h2>{volunteer.name}</h2>
                 <button className="assign-button">Assign Selected Event</button>

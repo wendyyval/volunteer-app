@@ -1,7 +1,8 @@
 import {useState} from 'react';
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
-import ProfileLayout from "../ProfileLayout"; 
+import ProfileLayout from "../ProfileLayout";
+import type { UserProfile } from '../../server/src/types';
 //import {useNavigate} from 'react-router-dom';
 
 const skillOptions = [
@@ -26,14 +27,47 @@ export default function Profile() {
     const [availability, setAvailability] = useState<DateObject[]>([])
     const [err, setErr] = useState("");
 
-    function onSubmit(e: React.FormEvent){
+    const userId = localStorage.getItem("userId");
+
+
+    async function onSubmit(e: React.FormEvent){
         e.preventDefault();
         setErr("");
         if(!fullName || !address1 || !city || !state || !zipCode || skills.length == 0 || availability.length == 0)
             return setErr("Plase fill in all required fields.")
         if(zipCode.length < 5)
             return setErr("Zip code must be at least 5 characters long.")
-        alert("Profile saved!")
+        //alert("Profile saved!")
+
+        const profile: UserProfile = {
+            fullName,
+            address1,
+            address2,
+            city,
+            state,
+            zip: zipCode,
+            skills,
+            preferences,
+            availability: availability.map(d => d.format("YYYY-MM-DD")) // or ISO string
+        };
+
+        try {
+            const res = await fetch("/api/users/saveprofile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, profile })
+            });
+
+            if (!res.ok) throw new Error("Failed to save profile");
+
+            alert("Profile saved!");
+        } catch (err) {
+            console.error(err);
+            setErr("Failed to save profile");
+        }
+
+
+
     }
     return (
         <ProfileLayout>
