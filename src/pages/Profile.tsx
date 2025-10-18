@@ -1,9 +1,13 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import ProfileLayout from "../ProfileLayout";
 import type { UserProfile } from '../../server/src/types';
 //import {useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
+import { fetchProfile, saveProfile } from "../api/profile";
+import type { ProfileData } from "../api/profile";
+import toast from "react-hot-toast"
 
 const skillOptions = [
   { value: "skill 1", label: "skill 1" },
@@ -15,7 +19,7 @@ const skillOptions = [
 ];
 
 export default function Profile() {
-    //const nav = useNavigate();
+    const navigate = useNavigate();
     const [fullName, setFullName] = useState("")
     const [address1, setAddress1] = useState("")
     const [address2, setAddress2] = useState("")
@@ -30,6 +34,29 @@ export default function Profile() {
     const userId = localStorage.getItem("userId");
 
 
+    useEffect(() => {
+        async function loadProfile() {
+            try {
+                const data = await fetchProfile();
+                if (data) {
+                setFullName(data.fullName);
+                setAddress1(data.address1);
+                setAddress2(data.address2 || "");
+                setCity(data.city);
+                setState(data.state);
+                setZipCode(data.zip);
+                setSkills(data.skills);
+                setPreferences(data.preferences || "");
+                setAvailability(data.availability.map((d: string) => new DateObject(d)));
+                }
+            } catch (err) {
+                console.error("Failed to fetch profile:", err);
+            }
+        }
+        loadProfile();
+    }, []);
+
+    
     async function onSubmit(e: React.FormEvent){
         e.preventDefault();
         setErr("");
@@ -80,7 +107,8 @@ export default function Profile() {
                         <input 
                             placeholder="(required)"
                             value={fullName}
-                            onChange={e=>setFullName(e.target.value)}
+                            onChange={e=>setFullName(e.target.value.slice(0,50))}
+                            maxLength={50}
                         />
                     </div>
                     
@@ -89,7 +117,8 @@ export default function Profile() {
                         <input 
                             placeholder="(required)"
                             value={address1}
-                            onChange={e=>setAddress1(e.target.value)}
+                            onChange={e => setAddress1(e.target.value.slice(0, 100))}
+                            maxLength={100}
                         />
                     </div>
 
@@ -98,7 +127,8 @@ export default function Profile() {
                         <input 
                             placeholder="(optional)"
                             value={address2}
-                            onChange={e=>setAddress2(e.target.value)}
+                            onChange={e => setAddress2(e.target.value.slice(0, 100))}
+                            maxLength={100}
                         />
                     </div>
 
@@ -107,7 +137,8 @@ export default function Profile() {
                         <input 
                             placeholder="(required)"
                             value={city}
-                            onChange={e=>setCity(e.target.value)}
+                            onChange={e => setCity(e.target.value.slice(0, 100))}
+                            maxLength={100}
                         />
                     </div>
 
@@ -176,7 +207,8 @@ export default function Profile() {
                         <input 
                             placeholder="(required)"
                             value={zipCode}
-                            onChange={e=>setZipCode(e.target.value)}
+                            onChange={e => setZipCode(e.target.value.slice(0, 9))} // max 9 chars
+                            maxLength={9}
                         />
                     </div>
 
@@ -235,7 +267,8 @@ export default function Profile() {
                             className="input-modern"
                             placeholder="Write any specific preferences...(optional)"
                             value={preferences}
-                            onChange={(e) => setPreferences(e.target.value)}
+                            onChange={e => setPreferences(e.target.value.slice(0, 500))} // optional limit
+                            maxLength={500}
                         />
                     </div>
 
