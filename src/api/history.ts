@@ -4,7 +4,7 @@ import { apiFetch } from "../utils/http";
 export type NewHistoryRow = {
     eventName?: string;
     eventDate?: string;
-    location?: string;
+    location?: String;
     requiredSkills?: string[];
     urgency?: "Low" | "Medium" | "High";
     participationStatus?: "Registered" | "Confirmed" | "Attended" | "No-Show" | "Cancelled" | "Withdrawn";
@@ -12,12 +12,12 @@ export type NewHistoryRow = {
 };
 
 export async function fetchMyHistory() {
-  const res = await apiFetch("/api/history/", { headers: authHeaders() });
+  const res = await apiFetch("/api/history/me", { headers: authHeaders() });
   return res;
 }
 
 export async function addMyHistory(row: NewHistoryRow){
-    const res = await apiFetch("/api/history/", {
+    const res = await apiFetch("/api/history/me", {
         method: "POST",
         headers: authHeaders({ "Content-Type": "application/json"}),
         body: JSON.stringify(row),

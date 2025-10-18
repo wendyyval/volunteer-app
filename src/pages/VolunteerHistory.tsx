@@ -37,33 +37,19 @@ export default function VolunteerHistory() {
 
   // fetch on mount
   useEffect(() => {
-  (async () => {
-    try {
-      const res = await fetchMyHistory();
-      if (handle401(res, () => nav("/login"))) return;
-
-      const data = await res.json().catch(() => []);
-
-      const raw = Array.isArray(data) ? data : (data?.items ?? []);
-      const list: EventHistoryItem[] = raw.map((r: any) => ({
-        id: r.id,
-        eventName: String(r.eventName ?? ""),
-        eventDate: r.eventDate ?? new Date().toISOString(),
-        location: String(r.location ?? ""),
-        requiredSkills: Array.isArray(r.requiredSkills) ? r.requiredSkills : [],
-        urgency: r.urgency ?? "Low",
-        participationStatus: r.participationStatus ?? "Registered",
-        hours: typeof r.hours === "number" ? r.hours : undefined,
-      }));
-
-      setRows(list);
-    } catch {
-      setErr("Failed to load history.");
-    } finally {
-      setLoading(false);
-    }
-  })();
-}, [nav]);
+    (async () => {
+      try {
+        const res = await fetchMyHistory();
+        if (handle401(res, () => nav("/login"))) return;
+        const data = await res.json().catch(() => []);
+        setRows(Array.isArray(data) ? data : []);
+      } catch {
+        setErr("Failed to load history.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [nav]);
 
   // sort/filter
   const filtered = useMemo(() => {
@@ -71,14 +57,11 @@ export default function VolunteerHistory() {
     if (status !== "All") data = data.filter(d => d.participationStatus === status);
     if (query.trim()) {
       const q = query.toLowerCase();
-      data = data.filter(d => {
-        const skills = Array.isArray(d.requiredSkills) ? d.requiredSkills : [];
-        return (
-          d.eventName.toLowerCase().includes(q) ||
-          d.location.toLowerCase().includes(q) ||
-          skills.join(",").toLowerCase().includes(q)
-        );
-      });
+      data = data.filter(d =>
+        d.eventName.toLowerCase().includes(q) ||
+        d.location.toLowerCase().includes(q) ||
+        d.requiredSkills.join(",").toLowerCase().includes(q)
+      );
     }
     data.sort((a, b) => {
       const va = a[sortKey];
@@ -221,7 +204,7 @@ export default function VolunteerHistory() {
                     <td className="py-3 px-4">{item.location}</td>
                     <td className="py-3 px-4">
                       <ul className="skill-list">
-                        {(item.requiredSkills ?? []).map(s => (
+                        {item.requiredSkills.map(s => (
                           <li key={s} className="chip chip-skill">{s}</li>
                         ))}
                       </ul>
@@ -258,7 +241,6 @@ function Th({
 }
 
 function formatDate(iso: string) {
-  const t = Date.parse(iso);
-  if (Number.isNaN(t)) return "-";
-  return new Date(t).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }

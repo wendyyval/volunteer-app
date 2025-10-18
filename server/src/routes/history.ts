@@ -1,96 +1,88 @@
-import { Router, Response } from "express";
-import { z } from "zod";
+import { Router } from "express";
 import { requireAuth } from "../middleware/requireAuth";
-import { getUserHistory } from "../store";
-import type { HistoryItem, ParticipationStatus } from "../types";
+import { z } from "zod";
 
 const router = Router();
 
-const createHistorySchema = z.object({
-  eventName: z.string().min(2).max(100).default("Community Cleanup"),
-  eventDate: z.string().default(() => new Date().toISOString()),
-  location: z.string().min(2).max(200).default("Houston, TX"),
-  requiredSkills: z.array(z.string()).default(["Teamwork"]),
-  urgency: z.enum(["Low","Medium","High"]).default("Low"),
-  participationStatus: z.enum([
-    "Registered","Confirmed","Attended","No-Show","Cancelled","Withdrawn"
-  ]).default("Registered"),
-  hours: z.number().optional().default(2),
+
+export const HistoryItemSchema = z.object({
+  id: z.string(),
+  eventName: z.string().max(100),
+  eventDate: z.string(),            // ISO date string ("2025-10-05")
+  location: z.string().max(200),
+  requiredSkills: z.array(z.string()).default([]),
+  urgency: z.enum(["Low", "Medium", "High"]),
+  participationStatus: z.enum(["Registered","Confirmed","Attended","No-Show","Cancelled","Withdrawn"]),
+  hours: z.number().optional(),
 });
 
-router.get("/", requireAuth, (req: any, res: Response) => {
-  const items = getUserHistory(req.user.sub);
-  res.json({ items });
+export type HistoryItem = z.infer<typeof HistoryItemSchema>;
+
+// In-memory store: userId -> history[]
+const store = new Map<string, HistoryItem[]>();
+
+//GET current user's history
+router.get("/me", requireAuth, (req: any, res) => {
+  const userId = req.user.sub as string; // your requireAuth should set req.user
+  const list = store.get(userId) ?? [];
+  res.json(list);
 });
 
-router.post("/", requireAuth, (req: any, res: Response) => {
-  const raw = req.body ?? {};
-
-  // Normalize: treat empty strings/null as undefined so defaults apply
-  const normalized = {
-    ...raw,
-    eventName:
-      typeof raw.eventName === "string" && raw.eventName.trim() ? raw.eventName : undefined,
-    eventDate:
-      typeof raw.eventDate === "string" && raw.eventDate.trim() ? raw.eventDate : undefined,
-    location:
-      typeof raw.location === "string" && raw.location.trim() ? raw.location : undefined,
-    requiredSkills: Array.isArray(raw.requiredSkills) ? raw.requiredSkills : undefined,
-    hours: typeof raw.hours === "number" ? raw.hours : undefined,
-  };
-
-  const parsed = createHistorySchema.safeParse(normalized);
+//POST add a history item for current user (for testing/demo)
+const NewItemSchema = HistoryItemSchema.partial().extend({
+  // allow client to omit id; we’ll generate it
+  id: z.string().optional(),
+});
+router.post("/me", requireAuth, (req: any, res) => {
+  const userId = req.user.sub as string;
+  const parsed = NewItemSchema.safeParse(req.body);
   if (!parsed.success) {
-    console.error("❌ History validation failed:", parsed.error.flatten());
-    return res.status(400).json({ error: parsed.error.flatten() });
+    return res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
   }
-
-  const data = parsed.data;
   const item: HistoryItem = {
-    id: `h-${Date.now()}`,
-    userId: req.user.sub,
-    eventName: data.eventName,
-    eventDate: data.eventDate,
-    location: data.location,
-    requiredSkills: data.requiredSkills,
-    urgency: data.urgency,
-    participationStatus: data.participationStatus as ParticipationStatus,
-    hours: data.hours,
+    id: parsed.data.id ?? crypto.randomUUID(),
+    eventName: parsed.data.eventName ?? "Untitled Event",
+    eventDate: parsed.data.eventDate ?? new Date().toISOString().slice(0,10),
+    location: parsed.data.location ?? "Unknown",
+    requiredSkills: parsed.data.requiredSkills ?? [],
+    urgency: parsed.data.urgency ?? "Medium",
+    participationStatus: parsed.data.participationStatus ?? "Registered",
+    hours: parsed.data.hours,
   };
-
-  const list = getUserHistory(req.user.sub);
+  const list = store.get(userId) ?? [];
   list.push(item);
-  return res.status(201).json(item);
+  store.set(userId, list);
+  res.status(201).json(item);
 });
 
-router.post("/seed", requireAuth, (req: any, res: Response) => {
-  const list = getUserHistory(req.user.sub);
+//OPTIONAL: seed sample rows for current user
+router.post("/seed", requireAuth, (req: any, res) => {
+  const userId = req.user.sub as string;
   const now = new Date();
-  list.push(
+  const sample: HistoryItem[] = [
     {
-      id: `h-${Date.now()-1}`,
-      userId: req.user.sub,
-      eventName: "Food Bank Sorting",
-      eventDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()-2).toISOString(),
-      location: "Houston, TX",
-      requiredSkills: ["Organizing", "Lifting"],
-      urgency: "High",
+      id: crypto.randomUUID(),
+      eventName: "Community Park Cleanup",
+      eventDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()-10).toISOString(),
+      location: "Austin, TX",
+      requiredSkills: ["Lifting", "Teamwork"],
+      urgency: "Low",
       participationStatus: "Attended",
-      hours: 3
+      hours: 3,
     },
     {
-      id: `h-${Date.now()-2}`,
-      userId: req.user.sub,
-      eventName: "Park Cleanup",
-      eventDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()-5).toISOString(),
+      id: crypto.randomUUID(),
+      eventName: "Food Bank Sorting",
+      eventDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()-3).toISOString(),
       location: "Austin, TX",
-      requiredSkills: ["Teamwork"],
+      requiredSkills: ["Organizing"],
       urgency: "Medium",
       participationStatus: "Confirmed",
-      hours: 2
-    }
-  );
-  res.json({ seeded: 2 });
+      hours: 2,
+    },
+  ];
+  store.set(userId, sample);
+  res.status(201).json({ seeded: sample.length });
 });
 
 export default router;

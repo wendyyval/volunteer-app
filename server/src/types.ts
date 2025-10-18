@@ -1,6 +1,6 @@
-export type Role = "volunteer" | "coordinator" | "admin";
+export type Role = "volunteer" | "admin";
 
-export interface User {
+export type User = {
   id: string;
   email: string;
   passwordHash: string;
@@ -25,33 +25,28 @@ export type EventUrgency = "Low" | "Medium" | "High";
 export type Event = {
   id: string;
   name: string;
-  role: Role;
-}
-
-export type ParticipationStatus =
-  | "Registered"
-  | "Confirmed"
-  | "Attended"
-  | "No-Show"
-  | "Cancelled"
-  | "Withdrawn";
-
-export interface HistoryItem {
-  id: string;
-  userId: string;
-  eventName: string;
-  eventDate: string; // ISO string
+  description: string;
   location: string;
   requiredSkills: string[];
-  urgency: "Low" | "Medium" | "High";
+  urgency: EventUrgency;
+  date: string; // ISO
+};
+
+export type ParticipationStatus =
+  | "Registered" | "Confirmed" | "Attended" | "No-Show" | "Cancelled" | "Withdrawn";
+
+export type HistoryItem = {
+  id: string;
+  userId: string;
+  eventId: string;
   participationStatus: ParticipationStatus;
   hours?: number;
-}
+};
 
 export type NoticeKind = "success" | "info" | "warning" | "error";
 export type NoticeTopic = "event_assignment" | "event_update" | "reminder" | "system";
 
-export interface AppNotification {
+export type Notice = {
   id: string;
   userId: string;
   kind: NoticeKind;
@@ -73,5 +68,4 @@ export type Volunteer = {
     preferences: string; 
     currentEvent?: string;
 };
-
 
