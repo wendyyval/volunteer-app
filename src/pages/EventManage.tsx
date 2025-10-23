@@ -178,7 +178,7 @@ export default function EventManage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="In depth description of the event."
-                rows={10}
+                rows={5}
               />
             </div>
 
