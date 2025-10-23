@@ -15,7 +15,7 @@ const skillOptions = [
   { value: "skill 3", label: "skill 3" },
   { value: "skill 4", label: "skill 4" },
   { value: "skill 5", label: "skill 5" },
-  { value: "skill 6", label: "skil 6" },
+  { value: "skill 6", label: "skill 6" },
 ];
 
 export default function Profile() {
