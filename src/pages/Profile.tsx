@@ -5,8 +5,7 @@ import ProfileLayout from "../ProfileLayout";
 import type { UserProfile } from '../../server/src/types';
 //import {useNavigate} from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
-import { fetchProfile, saveProfile } from "../api/profile";
-import type { ProfileData } from "../api/profile";
+import { fetchProfile} from "../api/profile";
 import toast from "react-hot-toast"
 
 const skillOptions = [
@@ -15,7 +14,7 @@ const skillOptions = [
   { value: "skill 3", label: "skill 3" },
   { value: "skill 4", label: "skill 4" },
   { value: "skill 5", label: "skill 5" },
-  { value: "skill 6", label: "skil 6" },
+  { value: "skill 6", label: "skill 6" },
 ];
 
 export default function Profile() {
@@ -64,7 +63,6 @@ export default function Profile() {
             return setErr("Plase fill in all required fields.")
         if(zipCode.length < 5)
             return setErr("Zip code must be at least 5 characters long.")
-        //alert("Profile saved!")
 
         const profile: UserProfile = {
             fullName,
@@ -78,24 +76,28 @@ export default function Profile() {
             availability: availability.map(d => d.format("YYYY-MM-DD")) // or ISO string
         };
 
-        try {
-            const res = await fetch("/api/users/saveprofile", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId, profile })
-            });
-
+            try {
+        await toast.promise(
+            fetch("/api/users/saveprofile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, profile }),
+            }).then((res) => {
             if (!res.ok) throw new Error("Failed to save profile");
-
-            alert("Profile saved!");
+            }),
+            {
+            loading: "Saving profile...",
+            success: "Profile saved!",
+            error: "Failed to save profile",
+            }
+        );
+        navigate("/history");
         } catch (err) {
-            console.error(err);
-            setErr("Failed to save profile");
+        console.error(err);
+        setErr("Failed to save profile");
         }
-
-
-
     }
+
     return (
         <ProfileLayout>
             <div className="profile-form-container">
