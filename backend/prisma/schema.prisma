@@ -1,86 +1,75 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model user_credentials {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
-  password_hash String
-  role          String
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  user_profile  user_profile?
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique
+  password_hash     String
+  role              String
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @updatedAt
+  user_profile      user_profile?
   volunteer_history volunteer_history[]
 }
 
 model user_profile {
-  user_id      String  @id
-  full_name    String  
-  address1     String  
-  address2     String? 
-  city         String  
-  state        String  
-  zip          String  
-  preferences  String? 
-
+  user_id          Int              @id
+  full_name        String
+  address1         String
+  address2         String?
+  city             String
+  state            String
+  zip              String
+  preferences      String?
+  availability     availability[]
   user_credentials user_credentials @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_skills      user_skills[]
-  availability     availability[]
-  volunteer_history volunteer_history[]
 
   @@map("user_profile")
 }
 
 model skills {
-  skill_id   Int    @id @default(autoincrement())
-  skill_name String @unique
-
-  user_skills  user_skills[]
+  skill_id     Int            @id @default(autoincrement())
+  skill_name   String         @unique
   event_skills event_skills[]
+  user_skills  user_skills[]
 
   @@map("skills")
 }
 
 model user_skills {
-  user_id  String
+  user_id  Int
   skill_id Int
-
-  user  user_profile @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  skill skills       @relation(fields: [skill_id], references: [skill_id], onDelete: Cascade)
+  skill    skills       @relation(fields: [skill_id], references: [skill_id], onDelete: Cascade)
+  user     user_profile @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@id([user_id, skill_id])
+  @@index([skill_id], map: "user_skills_skill_id_fkey")
   @@map("user_skills")
 }
 
 model availability {
-  user_id        String   
+  user_id        Int
   available_date DateTime
-
-  user user_profile @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user           user_profile @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@id([user_id, available_date])
   @@map("availability")
 }
 
 model event_details {
-  event_id    Int      @id @default(autoincrement())
-  event_name  String   
-  description String   
-  location    String   
-  urgency     Urgency
-  event_date  DateTime
-
+  event_id          Int                 @id @default(autoincrement())
+  event_name        String
+  description       String
+  location          String
+  urgency           Urgency
+  event_date        DateTime
   event_skills      event_skills[]
   volunteer_history volunteer_history[]
 
@@ -90,30 +79,31 @@ model event_details {
 model event_skills {
   event_id Int
   skill_id Int
-
-  event event_details @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
-  skill skills        @relation(fields: [skill_id], references: [skill_id], onDelete: Cascade)
+  event    event_details @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
+  skill    skills        @relation(fields: [skill_id], references: [skill_id], onDelete: Cascade)
 
   @@id([event_id, skill_id])
+  @@index([skill_id], map: "event_skills_skill_id_fkey")
   @@map("event_skills")
 }
 
 model volunteer_history {
-  history_id         Int                  @id @default(autoincrement())
-  user_id            String              
+  history_id         Int                 @id @default(autoincrement())
+  user_id            Int
   event_id           Int
-  participation_date DateTime            
+  participation_date DateTime
   status             ParticipationStatus
+  event              event_details       @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
+  user               user_credentials    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  user  user_profile  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  event event_details @relation(fields: [event_id], references: [event_id], onDelete: Cascade)
-
+  @@index([event_id], map: "volunteer_history_event_id_fkey")
+  @@index([user_id], map: "volunteer_history_user_id_fkey")
   @@map("volunteer_history")
 }
 
-enum Role {
-  volunteer
-  admin
+model states {
+  code String @id
+  name String
 }
 
 enum ParticipationStatus {
@@ -129,9 +119,4 @@ enum Urgency {
   Low
   Medium
   High
-}
-
-model States{
-  code String @id
-  name String
 }
