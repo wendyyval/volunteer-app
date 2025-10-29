@@ -23,6 +23,6 @@
 
     "types": ["react", "react-dom", "vite/client"]
   },
-  "include": ["frontend/srcntend/srcntend/src/src"],
+  "include": ["src"],
   "exclude": ["server", "node_modules"]
 }
