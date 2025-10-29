@@ -21,18 +21,4 @@ export type EventHistoryItem = {
     hours?: number;
 };
 
-<<<<<<< HEAD:src/types/event.ts
-
-export type Event = {
-    id: string;
-    name: string;
-    description: string;
-    location: string;
-    requiredSkills: string[];
-    urgency: Urgency;
-    eventDate: string;
-};
-
-=======
 export type HistoryItem = EventHistoryItem;
->>>>>>> wandy:frontend/src/types/event.ts

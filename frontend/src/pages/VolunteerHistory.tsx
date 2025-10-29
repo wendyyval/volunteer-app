@@ -47,10 +47,6 @@ export default function VolunteerHistory() {
     })();
   }, [nav]);
 
-<<<<<<< HEAD:src/pages/VolunteerHistory.tsx
-  // sort/filter
-=======
->>>>>>> wandy:frontend/src/pages/VolunteerHistory.tsx
   const filtered = useMemo(() => {
     let data = [...rows];
     if (status !== "All") data = data.filter(d => d.participationStatus === status);

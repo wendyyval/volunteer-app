@@ -2,6 +2,7 @@ import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import AuthLayout from "../layouts/AuthLayout";
 import toast from "react-hot-toast";
+import { apiFetch } from "../utils/http";
 
 
 
@@ -16,34 +17,30 @@ export default function Register(){
     e.preventDefault();
     setErr("");
 
-    // client-side checks
+
     if (!/\S+@\S+\.\S+/.test(email)) return setErr("Please enter a valid email address.");
     if (!email || !password) return setErr("Email and password are required");
     if (password.length < 6) return setErr("Password must be at least 6 characters long.");
 
     setLoading(true);
     try {
-<<<<<<< HEAD:src/pages/Register.tsx
-        const res = await fetch("/api/auth/register", {
-=======
         const res = await apiFetch("http://localhost:5713/register", {
->>>>>>> wandy:frontend/src/pages/Register.tsx
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
         });
 
-        // Try to parse server response
+       
         const data = await res.json().catch(() => ({} as any));
 
         if (!res.ok) {
-        // Nice messages for common cases
+      
         if (res.status === 409) return setErr("This email is already registered.");
         if (res.status === 400) return setErr("Please check your inputs and try again.");
         return setErr(typeof data.error === "string" ? data.error : "Registration failed.");
         }
 
-        // success
+      
         toast.success("Account created. Please sign in.");
         setTimeout(() => nav("/login"), 600);
     } catch (err) {
