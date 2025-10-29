@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react"; 
+import { useEffect } from "react"; 
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 <<<<<<< HEAD:src/pages/EventManage.tsx
@@ -8,6 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 =======
 import EventManageLayout from "../pages/EventManageLayout";
 >>>>>>> wandy:frontend/src/pages/EventManage.tsx
+import { v4 as uuidv4 } from "uuid";
+
 
 const skillOptions = [
   { value: "skill 1", label: "skill 1" },
@@ -16,15 +19,18 @@ const skillOptions = [
   { value: "skill 4", label: "skill 4" },
   { value: "skill 5", label: "skill 5" },
   { value: "skill 6", label: "skill 6" },
+  { value: "skill 6", label: "skill 6" },
 ];
 
 interface Event {
+  id: string;
   id: string;
   eventName: string;
   description: string;
   location: string;
   requiredSkills: string[];
   urgency: string;
+  eventDate: string[];
   eventDate: string[];
 }
 
@@ -80,10 +86,65 @@ export default function EventManage() {
     }
 
 
+
+    
+
+
+    async function sendEventToBackend(newEvent: Event) {
+        const response = await fetch("/api/events", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }, 
+            body: JSON.stringify(newEvent),
+        });
+
+        const savedEvent = await response.json();
+        setEvents([...events, savedEvent]);
+    }
+
+    async function fetchEventsFromBackend() {
+
+        try {
+            const response = await fetch("/api/events");
+            const allEvents = await response.json();
+            setEvents(allEvents);
+            console.log("Fetched events from backend:", allEvents);
+        } catch (error) {
+            console.error("Error fetching events:", error);
+        }
+        
+    }
+
+    async function deleteEventFromBackend(eventId: string) {
+        const response = await fetch(`/api/events/${eventId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+        });
+
+        if (response.ok) {
+            setEvents(events.filter(event => event.id !== eventId));
+        } else {
+            console.error("Failed to delete event");
+        }
+    }
+
+
+    function onSubmit(e: React.FormEvent) {
+        e.preventDefault();
+          setErr("");
     function onSubmit(e: React.FormEvent) {
         e.preventDefault();
           setErr("");
 
+          if (
+            !eventName ||
+            !description ||
+            !location ||
+            requiredSkills.length === 0 ||
+            !urgency ||
+            eventDate.length === 0
+          ) {
+            return setErr("Please fill in all required fields.");
+          }
           if (
             !eventName ||
             !description ||
@@ -104,9 +165,20 @@ export default function EventManage() {
             urgency,
             eventDate: eventDate.map(d => d.format("MM/DD/YYYY"))
         };
+        const newEvent: Event = {
+            id: uuidv4(), 
+            eventName,
+            description,
+            location,
+            requiredSkills,
+            urgency,
+            eventDate: eventDate.map(d => d.format("MM/DD/YYYY"))
+        };
 
         // call the backend function
         sendEventToBackend(newEvent);
+        sendEventToBackend(newEvent);
+
 
         // optionally clear the form fields
         setEventName("");
@@ -159,6 +231,21 @@ export default function EventManage() {
   //  setUrgency("");
   //  setEventDate([]);
   //}
+        setEventName("");
+        setDescription("");
+        setLocation("");
+        setRequiredSkills([]);
+        setUrgency("");
+        setEventDate([]);
+
+
+        fetchEventsFromBackend();
+    }
+
+
+    useEffect(() => {
+        fetchEventsFromBackend();
+    }, []);
 
   return (
     <EventManageLayout
@@ -182,6 +269,7 @@ export default function EventManage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="In depth description of the event."
+                rows={5}
                 rows={5}
               />
             </div>
@@ -293,6 +381,7 @@ export default function EventManage() {
                 className="delete-btn"
                 onClick={() => {
                   deleteEventFromBackend(ev.id);
+                  deleteEventFromBackend(ev.id);
                 }}
               >
                 ×
@@ -371,6 +460,7 @@ export default function EventManage() {
                         display: "inline-block",
                       }}
                     >
+                      {d}
                       {d}
                     </span>
                   ))}
