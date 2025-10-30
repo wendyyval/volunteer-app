@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
-import ProfileLayout from "../ProfileLayout";
+import ProfileLayout from "../pages/ProfileLayout";
 import type { UserProfile } from '../../server/src/types';
 import {useNavigate} from 'react-router-dom';
 import { fetchProfile} from "../api/profile";
