@@ -110,12 +110,12 @@ router.get("/me/history", requireAuth, async (req: any, res) => {
   res.json({ history: items });
 });
 
-router.post("/me/history", requireAuth, async (req: any, res) => {
-  const parsed = volunteerHistorySchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+// router.post("/me/history", requireAuth, async (req: any, res) => {
+//   const parsed = volunteerHistorySchema.safeParse(req.body);
+//   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
-  const record = await prisma.volunteer_history.create({ data: parsed.data });
-  res.json({ message: "History record added", record });
-});
+//   const record = await prisma.volunteer_history.create({ data: parsed.data });
+//   res.json({ message: "History record added", record });
+// });
 
 export default router;

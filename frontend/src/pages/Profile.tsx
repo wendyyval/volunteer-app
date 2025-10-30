@@ -80,7 +80,7 @@ export default function Profile() {
         //     availability: availability.map(d => d.format("YYYY-MM-DD")) 
         // };
 
-        const payload = {
+        const profile = {
             full_name: fullName,
             address1,
             address2,
@@ -91,31 +91,31 @@ export default function Profile() {
         };
 
         try {
-    await toast.promise(
-      fetch("/api/me/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...authHeaders() },
-        body: JSON.stringify(payload),
-      }).then((res) => {
-        if (!res.ok) throw new Error("Failed to save profile");
-      }),
-      {
-        loading: "Saving profile...",
-        success: "Profile saved!",
-        error: "Failed to save profile",
-      }
-    );
+            await toast.promise(
+            fetch("/api/me/profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", ...authHeaders() },
+                body: JSON.stringify(profile),
+            }).then((res) => {
+            if (!res.ok) throw new Error("Failed to save profile");}),
+                {
+                    loading: "Saving profile...",
+                    success: "Profile saved!",
+                    error: "Failed to save profile",
+                }
+            );
 
-    // Optionally: save skills & availability in separate endpoints
-    // await saveSkills(skills);
-    // await saveAvailability(availability);
+            // Optionally: save skills & availability in separate endpoints
+            // await saveSkills(skills);
+            // await saveAvailability(availability);
 
-    navigate("/history");
-  } catch (err) {
-    console.error(err);
-    setErr("Failed to save profile");
-  }
-}
+        navigate("/history");
+        } catch (err) {
+        console.error(err);
+        setErr("Failed to save profile");
+        }
+    }
+
 
     return (
         <ProfileLayout>
@@ -314,4 +314,3 @@ export default function Profile() {
         </ProfileLayout>
     );
 }
-
