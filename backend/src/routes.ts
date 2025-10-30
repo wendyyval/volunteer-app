@@ -88,6 +88,56 @@ router.post("/me/profile", requireAuth, async (req: any, res) => {
   res.json({ message: "Profile saved", profile });
 });
 
+// //SKILLS
+// router.post("/me/skills", requireAuth, async (req: any, res) => {
+//   const { skills } = req.body; // expect array of skill IDs
+//   if (!Array.isArray(skills)) return res.status(400).json({ error: "skills must be an array" });
+
+//   try {
+//     // Remove old skills first
+//     await prisma.user_skills.deleteMany({ where: { user_id: req.user.sub } });
+
+//     // Add new skills
+//     await prisma.user_skills.createMany({
+//       data: skills.map((skill_id: number) => ({ user_id: req.user.sub, skill_id })),
+//       skipDuplicates: true,
+//     });
+
+//     res.json({ message: "Skills saved" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to save skills" });
+//   }
+// });
+
+
+// //AVAILABILITY
+
+// router.post("/me/availability", requireAuth, async (req: any, res) => {
+//   const { availability } = req.body; // expect array of date strings
+//   if (!Array.isArray(availability)) return res.status(400).json({ error: "availability must be an array" });
+
+//   try {
+//     // Remove old availability
+//     await prisma.availability.deleteMany({ where: { user_id: req.user.sub } });
+
+//     // Add new availability
+//     await prisma.availability.createMany({
+//       data: availability.map((date: string) => ({
+//         user_id: req.user.sub,
+//         available_date: new Date(date),
+//       })),
+//       skipDuplicates: true,
+//     });
+
+//     res.json({ message: "Availability saved" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to save availability" });
+//   }
+// });
+
+
 router.get("/events", async (_req, res) => {
   const items = await prisma.event_details.findMany({ orderBy: { event_date: "asc" } });
   res.json({ events: items });
