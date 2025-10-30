@@ -2,10 +2,13 @@ import {useState, useEffect} from 'react';
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import ProfileLayout from "../pages/ProfileLayout";
-import type { UserProfile } from '../../server/src/types';
-import {useNavigate} from 'react-router-dom';
-import { fetchProfile} from "../api/profile";
-import toast from "react-hot-toast"
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import type { UserProfile } from "../types/user";
+import { fetchProfile } from "../api/history";
+
+const navigate = useNavigate();
+
 
 const skillOptions = [
   { value: "skill 1", label: "skill 1" },
@@ -71,7 +74,7 @@ export default function Profile() {
             zip: zipCode,
             skills,
             preferences,
-            availability: availability.map(d => d.format("YYYY-MM-DD"))
+            availability: availability.map(d => d.format("YYYY-MM-DD")) // or ISO string
         };
 
             try {
