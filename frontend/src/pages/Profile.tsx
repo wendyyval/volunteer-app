@@ -6,17 +6,22 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import type { UserProfile } from "../types/user";
 import { fetchProfile } from "../api/history";
+import { authHeaders } from '../utils/auth';
 
-const navigate = useNavigate();
-
+// const skillOptions = [
+//   { value: "skill 1", label: "skill 1" },
+//   { value: "skill 2", label: "skill 2" },
+//   { value: "skill 3", label: "skill 3" },
+//   { value: "skill 4", label: "skill 4" },
+//   { value: "skill 5", label: "skill 5" },
+//   { value: "skill 6", label: "skill 6" },
+// ];
 
 const skillOptions = [
-  { value: "skill 1", label: "skill 1" },
-  { value: "skill 2", label: "skill 2" },
-  { value: "skill 3", label: "skill 3" },
-  { value: "skill 4", label: "skill 4" },
-  { value: "skill 5", label: "skill 5" },
-  { value: "skill 6", label: "skill 6" },
+    { value: "Teamwork", label: "Teamwork" },
+    { value: "First Aid", label: "First Aid" },
+    { value: "Organization", label: "Organization" },
+    { value: "Leadership", label: "Leadership" },
 ];
 
 export default function Profile() {
@@ -30,24 +35,23 @@ export default function Profile() {
     const [preferences, setPreferences] = useState("")
     const [availability, setAvailability] = useState<DateObject[]>([])
     const [err, setErr] = useState("");
-
+    const navigate = useNavigate();
     const userId = localStorage.getItem("userId");
-
 
     useEffect(() => {
         async function loadProfile() {
             try {
                 const data = await fetchProfile();
                 if (data) {
-                setFullName(data.fullName);
-                setAddress1(data.address1);
-                setAddress2(data.address2 || "");
-                setCity(data.city);
-                setState(data.state);
-                setZipCode(data.zip);
-                setSkills(data.skills);
-                setPreferences(data.preferences || "");
-                setAvailability(data.availability.map((d: string) => new DateObject(d)));
+                    setFullName(data.fullName);
+                    setAddress1(data.address1);
+                    setAddress2(data.address2 || "");
+                    setCity(data.city);
+                    setState(data.state);
+                    setZipCode(data.zip);
+                    setSkills(data.skills);
+                    setPreferences(data.preferences || "");
+                    setAvailability(data.availability.map((d: string) => new DateObject(d)));
                 }
             } catch (err) {
                 console.error("Failed to fetch profile:", err);
@@ -56,48 +60,62 @@ export default function Profile() {
         loadProfile();
     }, []);
 
-    
     async function onSubmit(e: React.FormEvent){
         e.preventDefault();
         setErr("");
         if(!fullName || !address1 || !city || !state || !zipCode || skills.length == 0 || availability.length == 0)
-            return setErr("Plase fill in all required fields.")
+            return setErr("Please fill in all required fields.")
         if(zipCode.length < 5)
             return setErr("Zip code must be at least 5 characters long.")
 
-        const profile: UserProfile = {
-            fullName,
+        // const profile: UserProfile = {
+        //     fullName,
+        //     address1,
+        //     address2,
+        //     city,
+        //     state,
+        //     zip: zipCode,
+        //     skills,
+        //     preferences
+        //     availability: availability.map(d => d.format("YYYY-MM-DD")) 
+        // };
+
+        const payload = {
+            full_name: fullName,
             address1,
             address2,
             city,
             state,
             zip: zipCode,
-            skills,
             preferences,
-            availability: availability.map(d => d.format("YYYY-MM-DD")) // or ISO string
         };
 
-            try {
-        await toast.promise(
-            fetch("/api/users/saveprofile", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId, profile }),
-            }).then((res) => {
-            if (!res.ok) throw new Error("Failed to save profile");
-            }),
-            {
-            loading: "Saving profile...",
-            success: "Profile saved!",
-            error: "Failed to save profile",
-            }
-        );
-        navigate("/history");
-        } catch (err) {
-        console.error(err);
-        setErr("Failed to save profile");
-        }
-    }
+        try {
+    await toast.promise(
+      fetch("/api/me/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeaders() },
+        body: JSON.stringify(payload),
+      }).then((res) => {
+        if (!res.ok) throw new Error("Failed to save profile");
+      }),
+      {
+        loading: "Saving profile...",
+        success: "Profile saved!",
+        error: "Failed to save profile",
+      }
+    );
+
+    // Optionally: save skills & availability in separate endpoints
+    // await saveSkills(skills);
+    // await saveAvailability(availability);
+
+    navigate("/history");
+  } catch (err) {
+    console.error(err);
+    setErr("Failed to save profile");
+  }
+}
 
     return (
         <ProfileLayout>
@@ -217,7 +235,8 @@ export default function Profile() {
 
                     <div className="profile-field">
                         <label > Skills</label>
-                        <Select isMulti
+                        <Select 
+                            isMulti
                             options={skillOptions}
                             value={skillOptions.filter(option => skills.includes(option.value))}
                             onChange={(selected) =>setSkills(selected.map(option => option.value))}
@@ -295,3 +314,4 @@ export default function Profile() {
         </ProfileLayout>
     );
 }
+
