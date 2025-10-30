@@ -7,9 +7,6 @@ import toast from "react-hot-toast";
 import type { UserProfile } from "../types/user";
 import { fetchProfile } from "../api/history";
 
-const navigate = useNavigate();
-
-
 const skillOptions = [
   { value: "skill 1", label: "skill 1" },
   { value: "skill 2", label: "skill 2" },
@@ -20,6 +17,7 @@ const skillOptions = [
 ];
 
 export default function Profile() {
+    const navigate = useNavigate();
     const [fullName, setFullName] = useState("")
     const [address1, setAddress1] = useState("")
     const [address2, setAddress2] = useState("")
