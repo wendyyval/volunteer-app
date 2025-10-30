@@ -1,17 +1,11 @@
 import {useState, useEffect} from 'react';
 import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
-<<<<<<< HEAD:src/pages/Profile.tsx
 import ProfileLayout from "../ProfileLayout";
 import type { UserProfile } from '../../server/src/types';
-//import {useNavigate} from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
 import { fetchProfile} from "../api/profile";
 import toast from "react-hot-toast"
-=======
-import ProfileLayout from "../pages/ProfileLayout"; 
-
->>>>>>> wandy:frontend/src/pages/Profile.tsx
 
 const skillOptions = [
   { value: "skill 1", label: "skill 1" },
@@ -23,11 +17,6 @@ const skillOptions = [
 ];
 
 export default function Profile() {
-<<<<<<< HEAD:src/pages/Profile.tsx
-    const navigate = useNavigate();
-=======
-
->>>>>>> wandy:frontend/src/pages/Profile.tsx
     const [fullName, setFullName] = useState("")
     const [address1, setAddress1] = useState("")
     const [address2, setAddress2] = useState("")
@@ -82,7 +71,7 @@ export default function Profile() {
             zip: zipCode,
             skills,
             preferences,
-            availability: availability.map(d => d.format("YYYY-MM-DD")) // or ISO string
+            availability: availability.map(d => d.format("YYYY-MM-DD"))
         };
 
             try {
