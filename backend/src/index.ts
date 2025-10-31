@@ -8,7 +8,6 @@ dotenv.config({ path: "./.env" });
 console.log("Using DATABASE_URL:", process.env.DATABASE_URL);
 
 const app = express();
-
 app.use(
   cors({
     origin: [
@@ -26,6 +25,7 @@ app.use(express.json());
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 const prisma = new PrismaClient();
+console.log("✅ Prisma client initialized"); // confirmation log, remove 
 app.post("/api/register", async (req, res) => {
   const { email, password } = req.body;
 
@@ -56,4 +56,10 @@ app.post("/api/register", async (req, res) => {
 });
 
 const port = process.env.PORT || 3001;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => console.log(`Server running on port ${port}`));
+}
+
+export default app;
+
