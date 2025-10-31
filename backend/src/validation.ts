@@ -26,6 +26,7 @@ export const eventSchema = z.object({
   location: z.string().min(2).max(255),
   urgency: z.enum(["Low", "Medium", "High"]),
   event_date: z.coerce.date(),
+  skills: z.array(skillSchema).optional(),
 });
 
 export const volunteerHistorySchema = z.object({

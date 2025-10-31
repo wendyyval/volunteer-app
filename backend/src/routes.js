@@ -8,6 +8,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const db_1 = require("./db");
 const validation_1 = require("./validation");
+const { string } = require("../../node_modules/zod/v4/core/regexes.cjs");
 const router = (0, express_1.Router)();
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 function requireAuth(req, res, next) {
@@ -82,9 +83,77 @@ router.post("/events", requireAuth, async (req, res) => {
     const parsed = validation_1.eventSchema.safeParse(req.body);
     if (!parsed.success)
         return res.status(400).json({ error: parsed.error.flatten() });
+
+    const { requiredSkills, ...eventData } = parsed.data;
+
+    // create the event first
     const event = await db_1.prisma.event_details.create({ data: parsed.data });
+
+
+    for (const skillName of requiredSkills) {
+        // Find skill in the DB
+        const skill = await db_1.prisma.skills.findFirst({
+            where: { skill_name: skillName }
+        });
+
+        if (skill) {
+            await db_1.prisma.event_skills.create({
+                data: {
+                    event_id: event.event_id,
+                    skill_id: skill.skill_id
+                }
+            });
+        }
+    }
+
     res.json({ message: "Event created", event });
 });
+//router.post("/events", requireAuth, async (req, res) => {
+//    console.log("POST /events hit", req.body);
+
+//    const parsed = validation_1.eventSchema.safeParse(req.body);
+//    if (!parsed.success)
+//        return res.status(400).json({ error: parsed.error.flatten() });
+
+//    const { requiredSkills, ...eventData } = parsed.data;
+
+//    // Create the event first
+//    const event = await db_1.prisma.event_details.create({
+//        data: eventData,
+//    });
+
+//    console.log("Created event:", event);
+//    console.log("Received skills to assign:", requiredSkills);
+
+//    // Assign existing skills to the event
+//    if (Array.isArray(requiredSkills) && requiredSkills.length > 0) {
+//        const skillRecords = await db_1.prisma.skill.findMany({
+//            where: { skill_name: { in: requiredSkills } },
+//        });
+
+//        console.log("Found skills in DB:", skillRecords);
+
+//        await db_1.prisma.eventSkill.createMany({
+//            data: skillRecords.map((skill) => ({
+//                event_id: event.event_id,
+//                skill_id: skill.skill_id,
+//            })),
+//            skipDuplicates: true,
+//        });
+//    }
+
+//    // Return event with linked skills
+//    const eventWithSkills = await db_1.prisma.event_details.findUnique({
+//        where: { event_id: event.event_id },
+//        include: { event_skills: { include: { skill: true } } },
+//    });
+
+//    console.log("Event with assigned skills:", eventWithSkills);
+
+//    res.json({ message: "Event created", event: eventWithSkills });
+//});
+
+
 router.get("/me/history", requireAuth, async (req, res) => {
     const items = await db_1.prisma.volunteer_history.findMany({
         where: { user_id: req.user.sub },
@@ -100,4 +169,21 @@ router.post("/me/history", requireAuth, async (req, res) => {
     const record = await db_1.prisma.volunteer_history.create({ data: parsed.data });
     res.json({ message: "History record added", record });
 });
+
+
+// Get all skills
+router.get("/skills", async (req, res) => {
+    try {
+        const skills = await db_1.prisma.skills.findMany({
+            select: { skill_id: true, skill_name: true },
+            orderBy: { skill_name: "asc" },
+        });
+        res.json({ skills });
+    } catch (error) {
+        console.error("Error fetching skills:", error);
+        res.status(500).json({ error: "Failed to fetch skills" });
+    }
+});
+
+
 exports.default = router;

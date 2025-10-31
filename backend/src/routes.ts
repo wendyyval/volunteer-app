@@ -110,6 +110,19 @@ router.post("/me/profile", requireAuth, async (req: any, res) => {
 //   }
 // });
 
+router.get("/skills", async (req, res) => {
+    try {
+        const skills = await prisma.skills.findMany({
+            select: { skill_id: true, skill_name: true },
+            orderBy: { skill_name: "asc" },
+        });
+        res.json({ skills });
+    } catch (error) {
+        console.error("Error fetching skills:", error);
+        res.status(500).json({ error: "Failed to fetch skills" });
+    }
+});
+
 
 // //AVAILABILITY
 
@@ -138,18 +151,24 @@ router.post("/me/profile", requireAuth, async (req: any, res) => {
 // });
 
 
+
+
+
 router.get("/events", async (_req, res) => {
   const items = await prisma.event_details.findMany({ orderBy: { event_date: "asc" } });
   res.json({ events: items });
 });
 
-router.post("/events", requireAuth, async (req, res) => {
-  const parsed = eventSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+//router.post("/events", requireAuth, async (req, res) => {
+//    console.log("Raw request body:", JSON.stringify(req.body, null, 2));
+//    const parsed = eventSchema.safeParse(req.body);
+//    console.log("Parsed data:", JSON.stringify(parsed.data, null, 2));
+//    if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+//  const event = await prisma.event_details.create({ data: parsed.data });
+//  res.json({ message: "Event created", event });
+//});
 
-  const event = await prisma.event_details.create({ data: parsed.data });
-  res.json({ message: "Event created", event });
-});
+
 
 router.get("/me/history", requireAuth, async (req: any, res) => {
   const items = await prisma.volunteer_history.findMany({

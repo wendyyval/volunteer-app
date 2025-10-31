@@ -3,7 +3,8 @@
 import {PrismaClient} from "@prisma/client";
 import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
-async function main(){
+async function main() {
+
   const skills = await Promise.all([
     prisma.skills.upsert({
       where: { skill_name: "Teamwork" },
