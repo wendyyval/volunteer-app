@@ -1,25 +1,17 @@
 import {useState, useEffect} from 'react';
-import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
+import type { StylesConfig } from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import ProfileLayout from "../pages/ProfileLayout";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import type { UserProfile } from "../types/user";
 import { fetchProfile } from "../api/history";
+import { apiFetch } from "../utils/http";
 
-const navigate = useNavigate();
-
-
-const skillOptions = [
-  { value: "skill 1", label: "skill 1" },
-  { value: "skill 2", label: "skill 2" },
-  { value: "skill 3", label: "skill 3" },
-  { value: "skill 4", label: "skill 4" },
-  { value: "skill 5", label: "skill 5" },
-  { value: "skill 6", label: "skill 6" },
-];
 
 export default function Profile() {
+    const navigate = useNavigate();
     const [fullName, setFullName] = useState("")
     const [address1, setAddress1] = useState("")
     const [address2, setAddress2] = useState("")
@@ -30,33 +22,48 @@ export default function Profile() {
     const [preferences, setPreferences] = useState("")
     const [availability, setAvailability] = useState<DateObject[]>([])
     const [err, setErr] = useState("");
+    const [availableSkills, setAvailableSkills] = useState<{ value: string; label: string }[]>([]);
 
     const userId = localStorage.getItem("userId");
 
-
+    useEffect(() => {
+    async function loadSkills() {
+      try {
+        const res = await apiFetch("/skills"); 
+        const data = await res.json();
+        setAvailableSkills(
+          data.map((s: any) => ({ value: s.skill_name, label: s.skill_name }))
+        );
+      } catch (err) {
+        console.error("Failed to load skills:", err);
+      }
+    }
+    loadSkills();
+  }, []);
     useEffect(() => {
         async function loadProfile() {
-            try {
-                const data = await fetchProfile();
-                if (data) {
-                setFullName(data.fullName);
-                setAddress1(data.address1);
-                setAddress2(data.address2 || "");
-                setCity(data.city);
-                setState(data.state);
-                setZipCode(data.zip);
-                setSkills(data.skills);
-                setPreferences(data.preferences || "");
-                setAvailability(data.availability.map((d: string) => new DateObject(d)));
-                }
-            } catch (err) {
-                console.error("Failed to fetch profile:", err);
+        try {
+            const data = await fetchProfile();
+            if (data) {
+            setFullName(data.fullName);
+            setAddress1(data.address1);
+            setAddress2(data.address2 || "");
+            setCity(data.city);
+            setState(data.state);
+            setZipCode(data.zip);
+            setSkills(data.skills || []);
+            setPreferences(data.preferences || "");
+            setAvailability(
+                data.availability?.map((d: string) => new DateObject(d)) || []
+            );
             }
+        } catch (err) {
+            console.error("Failed to fetch profile:", err);
+        }
         }
         loadProfile();
     }, []);
 
-    
     async function onSubmit(e: React.FormEvent){
         e.preventDefault();
         setErr("");
@@ -74,30 +81,70 @@ export default function Profile() {
             zip: zipCode,
             skills,
             preferences,
-            availability: availability.map(d => d.format("YYYY-MM-DD")) // or ISO string
+            availability: availability.map((d) => d.format("YYYY-MM-DD")),
         };
 
-            try {
-        await toast.promise(
-            fetch("/api/users/saveprofile", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId, profile }),
-            }).then((res) => {
-            if (!res.ok) throw new Error("Failed to save profile");
-            }),
-            {
-            loading: "Saving profile...",
-            success: "Profile saved!",
-            error: "Failed to save profile",
+        try {
+            await toast.promise(
+                apiFetch("/users/saveprofile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, profile }),
+                }).then((res) => {
+                    if (!res.ok) throw new Error("Failed to save profile");
+                }),
+                {
+                    loading: "Saving profile...",
+                    success: "Profile saved!",
+                    error: "Failed to save profile",
+                }
+            );
+            navigate("/history");
+            } catch (err) {
+                console.error(err);
+                setErr("Failed to save profile");
             }
-        );
-        navigate("/history");
-        } catch (err) {
-        console.error(err);
-        setErr("Failed to save profile");
         }
-    }
+
+    const selectStyles: StylesConfig<{ value: string; label: string }, true> = {
+        control: (provided) => ({
+            ...provided,
+            backgroundColor: "rgba(255, 255, 255, 0.06)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            borderRadius: "12px",
+            padding: "2px 6px",
+            color: "var(--text)",
+            boxShadow: "0 1px 0 rgba(255,255,255,.03) inset",
+        }),
+        input: (provided) => ({
+            ...provided,
+            color: "black",
+        }),
+        placeholder: (provided) => ({
+            ...provided,
+            color: "rgba(229, 231, 235, .55)",
+        }),
+        menu: (provided) => ({
+            ...provided,
+            backgroundColor: "white",
+            color: "black",
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isFocused ? "#eee" : "white",
+            color: "black",
+            cursor: "pointer",
+        }),
+        multiValue: (provided) => ({
+            ...provided,
+            backgroundColor: "white",
+            color: "black",
+        }),
+        multiValueLabel: (provided) => ({
+            ...provided,
+            color: "black",
+        }),
+        };    
 
     return (
         <ProfileLayout>
@@ -210,57 +257,43 @@ export default function Profile() {
                         <input 
                             placeholder="(required)"
                             value={zipCode}
-                            onChange={e => setZipCode(e.target.value.slice(0, 9))} // max 9 chars
+                            onChange={e => setZipCode(e.target.value.slice(0, 9))}
                             maxLength={9}
                         />
                     </div>
 
                     <div className="profile-field">
-                        <label > Skills</label>
-                        <Select isMulti
-                            options={skillOptions}
-                            value={skillOptions.filter(option => skills.includes(option.value))}
-                            onChange={(selected) =>setSkills(selected.map(option => option.value))}
-                            placeholder = "Select your skills..."
-                            styles={{
-                                control: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: "rgba(255, 255, 255, 0.06)", 
-                                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                                    borderRadius: "12px",
-                                    padding: "2px 6px",
-                                    color: "var(--text)",
-                                    boxShadow: "0 1px 0 rgba(255,255,255,.03) inset",
-                                }),
-                                input: (provided) => ({
-                                    ...provided,
-                                    color: "black", 
-                                }),
-                                placeholder: (provided) => ({
-                                    ...provided,
-                                    color: "rgba(229, 231, 235, .55)",
-                                }),
-                                menu: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: "white",
-                                    color: "black",
-                                }),
-                                option: (provided, state) => ({
-                                    ...provided,
-                                    backgroundColor: state.isFocused ? "#eee" : "white",
-                                    color: "black",
-                                    cursor: "pointer",
-                                }),
-                                multiValue: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: "white",
-                                    color: "black",
-                                }),
-                                multiValueLabel: (provided) => ({
-                                    ...provided,
-                                    color: "black",
-                                }),
-                            }}
+                    <label>Skills</label>
+                    <CreatableSelect
+                        isMulti
+                        options={availableSkills}
+                        value={availableSkills.filter(opt => skills.includes(opt.value))}
+                        onChange={async (selected: any, actionMeta: any) => {
+                            const newValues = selected.map((opt: any) => opt.value);
+                            setSkills(newValues);
+                            if (actionMeta.action === "create-option") {
+                                const newSkill = selected[selected.length - 1].value;
+                                try {
+                                const res = await apiFetch("/skills", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ skill_name: newSkill }),
+                                });
+
+                                if (!res.ok) throw new Error("Failed to add skill");
+                                console.log(`Added new skill: ${newSkill}`);
+                                const updatedRes = await apiFetch("/skills");
+                                const data = await updatedRes.json();
+                                setAvailableSkills(
+                                    data.map((s: any) => ({ value: s.skill_name, label: s.skill_name }))
+                                );
+                                } catch (err) {
+                                console.error("Error adding skill:", err);
+                                }
+                            }
+                        }}
+                        placeholder="Select or create skills..."
+                        styles={selectStyles}
                         />
                     </div>
 

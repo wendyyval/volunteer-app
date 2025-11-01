@@ -14,8 +14,9 @@ export default function Register(){
     const [loading, setLoading] = useState(false);
 
     async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setErr("");
+        e.preventDefault();
+        console.log("Submitting form...");
+        setErr("");
 
 
     if (!/\S+@\S+\.\S+/.test(email)) return setErr("Please enter a valid email address.");
@@ -24,11 +25,16 @@ export default function Register(){
 
     setLoading(true);
     try {
-        const res = await apiFetch("http://localhost:5713/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        });
+        const API_BASE =
+            import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+        console.log("API_BASE →", API_BASE);
+
+        const res = await apiFetch("/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+            });
 
        
         const data = await res.json().catch(() => ({} as any));
