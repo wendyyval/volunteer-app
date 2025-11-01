@@ -5,27 +5,19 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 async function main(){
   const skills = await Promise.all([
-    prisma.skills.upsert({
-      where: { skill_name: "Teamwork" },
-      update: {},
-      create: { skill_name: "Teamwork" },
-    }),
-    prisma.skills.upsert({
-      where: { skill_name: "First Aid" },
-      update: {},
-      create: { skill_name: "First Aid" },
-    }),
-    prisma.skills.upsert({
-      where: { skill_name: "Organization" },
-      update: {},
-      create: { skill_name: "Organization" },
-    }),
-    prisma.skills.upsert({
-      where: { skill_name: "Leadership" },
-      update: {},
-      create: { skill_name: "Leadership" },
-    }),
-  ]);
+  prisma.skills.upsert({ where: { skill_name: "Teamwork" }, update: {}, create: { skill_name: "Teamwork" } }),
+  prisma.skills.upsert({ where: { skill_name: "First Aid" }, update: {}, create: { skill_name: "First Aid" } }),
+  prisma.skills.upsert({ where: { skill_name: "Organization" }, update: {}, create: { skill_name: "Organization" } }),
+  prisma.skills.upsert({ where: { skill_name: "Leadership" }, update: {}, create: { skill_name: "Leadership" } }),
+  prisma.skills.upsert({ where: { skill_name: "Communication" }, update: {}, create: { skill_name: "Communication" } }),
+  prisma.skills.upsert({ where: { skill_name: "Problem Solving" }, update: {}, create: { skill_name: "Problem Solving" } }),
+  prisma.skills.upsert({ where: { skill_name: "Event Planning" }, update: {}, create: { skill_name: "Event Planning" } }),
+  prisma.skills.upsert({ where: { skill_name: "Data Entry" }, update: {}, create: { skill_name: "Data Entry" } }),
+  prisma.skills.upsert({ where: { skill_name: "Fundraising" }, update: {}, create: { skill_name: "Fundraising" } }),
+  prisma.skills.upsert({ where: { skill_name: "Teaching" }, update: {}, create: { skill_name: "Teaching" } }),
+  prisma.skills.upsert({ where: { skill_name: "Social Media Management" }, update: {}, create: { skill_name: "Social Media Management" } }),
+  prisma.skills.upsert({ where: { skill_name: "Customer Service" }, update: {}, create: { skill_name: "Customer Service" } }),
+]);
 
   const hashedPassword = await bcrypt.hash("Password123!", 10);
   const user = await prisma.user_credentials.upsert({
@@ -62,17 +54,20 @@ async function main(){
     },
   });
 
-  const teamworkSkill = await prisma.skills.findFirst({
-    where: { skill_name: "Teamwork" },
+  const relatedSkills = await prisma.skills.findMany({
+  where: {
+    skill_name: { in: ["Teamwork", "Organization", "Leadership"] },
+  },
+});
+
+if (relatedSkills.length > 0) {
+  await prisma.event_skills.createMany({
+    data: relatedSkills.map(skill => ({
+      event_id: event.event_id,
+      skill_id: skill.skill_id,
+    })),
   });
-  if (teamworkSkill) {
-    await prisma.event_skills.create({
-      data: {
-        event_id: event.event_id,
-        skill_id: teamworkSkill.skill_id,
-      },
-    });
-  }
+}
 
   await prisma.volunteer_history.create({
     data: {

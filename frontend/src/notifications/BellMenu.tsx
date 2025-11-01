@@ -19,7 +19,6 @@ export default function BellMenu() {
   const [open, setOpen] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
 
-  // close on click outside / ESC
   useEffect(() => {
     function onDoc(e: MouseEvent) {
       if (!boxRef.current) return;

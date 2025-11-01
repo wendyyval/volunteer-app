@@ -4,17 +4,8 @@ import Select from "react-select";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import EventManageLayout from "../pages/EventManageLayout";
 import { v4 as uuidv4 } from "uuid";
-
-
-const skillOptions = [
-  { value: "skill 1", label: "skill 1" },
-  { value: "skill 2", label: "skill 2" },
-  { value: "skill 3", label: "skill 3" },
-  { value: "skill 4", label: "skill 4" },
-  { value: "skill 5", label: "skill 5" },
-  { value: "skill 6", label: "skill 6" },
-  { value: "skill 6", label: "skill 6" },
-];
+import { apiFetch } from "../utils/http";
+import toast from "react-hot-toast";
 
 interface Event {
   id: string;
@@ -35,84 +26,106 @@ export default function EventManage() {
   const [eventDate, setEventDate] = useState<DateObject[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [err, setErr] = useState("");
+  
+  const skillOptions = [
+    { value: "First Aid", label: "First Aid" },
+    { value: "Leadership", label: "Leadership" },
+    { value: "Organization", label: "Organization" },
+    { value: "Teamwork", label: "Teamwork" },
+  ];
 
-    async function sendEventToBackend(newEvent: Event) {
-        const response = await fetch("/api/events", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" }, 
-            body: JSON.stringify(newEvent),
-        });
+  async function fetchEventsFromBackend() {
+  try {
+    const res = await apiFetch("/events");
+    if (!res.ok) throw new Error("Failed to fetch events");
+    const raw = await res.json();
 
-        const savedEvent = await response.json();
-        setEvents([...events, savedEvent]);
+    const safeEvents = Array.isArray(raw) ? raw : [];
+    const formatted = safeEvents.map((ev: any) => ({
+      id: ev.event_id ?? ev.id ?? "",
+      eventName: ev.event_name ?? ev.eventName ?? "Untitled Event",
+      description: ev.description ?? "",
+      location: ev.location ?? "",
+      urgency: ev.urgency ?? "Low",
+      eventDate: [
+        new Date(ev.event_date ?? Date.now()).toLocaleDateString(),
+      ],
+      requiredSkills:
+        ev.requiredSkills ??
+        ev.event_skills?.map((es: any) => es.skill?.skill_name ?? "") ??
+        [],
+    }));
+
+    console.log("Fetched events:", formatted);
+    setEvents(formatted);
+  } catch (err) {
+    console.error("Error fetching events:", err);
+    setEvents([]);
+  }
+}
+async function sendEventToBackend(newEvent: Event) {
+  try {
+    const res = await apiFetch("/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event_name: newEvent.eventName,
+        description: newEvent.description,
+        location: newEvent.location,
+        urgency: newEvent.urgency,
+        event_date: newEvent.eventDate[0],
+        requiredSkills: newEvent.requiredSkills,
+        creatorId: localStorage.getItem("userId"),
+      }),
+    });
+
+    if (!res.ok) throw new Error("Failed to save event");
+
+    const savedEvent = await res.json();
+    setEvents((prev) => [...prev, savedEvent]);
+    toast.success("Event created successfully!");
+  } catch (err) {
+    console.error("Error creating event:", err);
+    toast.error("Failed to create event");
+  }
+}
+async function deleteEventFromBackend(eventId: string) {
+    try {
+      const res = await apiFetch(`/events/${eventId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      setEvents(events.filter((event) => event.id !== eventId));
+      toast.success("Event deleted!");
+    } catch (err) {
+      console.error("Error deleting event:", err);
+      toast.error("Failed to delete event");
     }
+  }
 
-    async function fetchEventsFromBackend() {
+async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr("");
 
-        try {
-            const response = await fetch("/api/events");
-            const allEvents = await response.json();
-            setEvents(allEvents);
-            console.log("Fetched events from backend:", allEvents);
-        } catch (error) {
-            console.error("Error fetching events:", error);
-        }
-        
+    if (
+      !eventName ||
+      !description ||
+      !location ||
+      requiredSkills.length === 0 ||
+      !urgency ||
+      eventDate.length === 0
+    ) {
+      return setErr("Please fill in all required fields.");
     }
-
-    async function deleteEventFromBackend(eventId: string) {
-        const response = await fetch(`/api/events/${eventId}`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-        });
-
-        if (response.ok) {
-            setEvents(events.filter(event => event.id !== eventId));
-        } else {
-            console.error("Failed to delete event");
-        }
-    }
-
-    function onSubmit(e: React.FormEvent) {
-        e.preventDefault();
-          setErr("");
-    function onSubmit(e: React.FormEvent) {
-        e.preventDefault();
-          setErr("");
-
-          if (
-            !eventName ||
-            !description ||
-            !location ||
-            requiredSkills.length === 0 ||
-            !urgency ||
-            eventDate.length === 0
-          ) {
-            return setErr("Please fill in all required fields.");
-          }
-          if (
-            !eventName ||
-            !description ||
-            !location ||
-            requiredSkills.length === 0 ||
-            !urgency ||
-            eventDate.length === 0
-          ) {
-            return setErr("Please fill in all required fields.");
-          }
-
-        const newEvent: Event = {
-            id: uuidv4(), 
-            eventName,
-            description,
-            location,
-            requiredSkills,
-            urgency,
-            eventDate: eventDate.map(d => d.format("MM/DD/YYYY"))
+    const newEvent: Event = {
+          id: uuidv4(),
+          eventName,
+          description,
+          location,
+          requiredSkills,
+          urgency,
+          eventDate: eventDate.map((d) => d.format("YYYY-MM-DD")),
         };
 
-        sendEventToBackend(newEvent);
-        sendEventToBackend(newEvent);
+        await sendEventToBackend(newEvent);
 
         setEventName("");
         setDescription("");
@@ -120,28 +133,12 @@ export default function EventManage() {
         setRequiredSkills([]);
         setUrgency("");
         setEventDate([]);
+
+        await fetchEventsFromBackend();
+      }   
+      useEffect(() => {
         fetchEventsFromBackend();
-    }
-
-
-    useEffect(() => {
-        fetchEventsFromBackend();
-    }, []);
-        setEventName("");
-        setDescription("");
-        setLocation("");
-        setRequiredSkills([]);
-        setUrgency("");
-        setEventDate([]);
-
-
-        fetchEventsFromBackend();
-    }
-
-
-    useEffect(() => {
-        fetchEventsFromBackend();
-    }, []);
+      }, []);
 
   return (
     <EventManageLayout
@@ -368,9 +365,3 @@ export default function EventManage() {
     />
   );
 }
-
-
-
-
-
-
