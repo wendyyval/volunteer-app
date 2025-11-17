@@ -24,7 +24,8 @@ export default function MainLayout({ children }: Props) {
           </Link>
 
           {/* Nav */}
-          <nav className="site-nav" aria-label="Primary">
+          <nav className="flex gap-6">
+            <NavLink to="/" className="nav-link">Home</NavLink>
             <NavLink to="/history" className="nav-link">History</NavLink>
             <NavLink to="/profile" className="nav-link">Profile</NavLink>
             <NavLink to="/manage"  className="nav-link">Events</NavLink>
