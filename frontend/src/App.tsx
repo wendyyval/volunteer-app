@@ -5,18 +5,23 @@ import Register from "./pages/Register";
 import VolunteerHistory from "./pages/VolunteerHistory";
 import VolunteerAssign from "./pages/VolunteerAssignment";
 import EventManage from "./pages/EventManage";
+import Home from "./pages/Home";
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={< Home />} />
+
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
       <Route path="/profile" element={<Profile />} />
       <Route path="/history" element={<VolunteerHistory />} />
       <Route path="/assign" element={<VolunteerAssign />} />
+
       <Route path="/manage" element={< EventManage/>} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
