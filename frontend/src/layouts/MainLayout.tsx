@@ -13,11 +13,11 @@ export default function MainLayout({ children }: Props) {
     nav("/login");
   }
 
-   const handleGenerateReport = async () => {
+   const handleGenerateReport = async (format: "pdf" | "csv") => {
     try {
       console.log("Downloading report...");
 
-      const res = await fetch("http://localhost:3001/api/generate-report", {
+      const res = await fetch(`http://localhost:3001/api/generate-report?format=${format}`, {
         method: "GET",
         credentials: "include", 
       });
@@ -31,7 +31,7 @@ export default function MainLayout({ children }: Props) {
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "volunteer_report.pdf";
+      a.download = `volunteer_report.${format}`;
       a.click();
 
       window.URL.revokeObjectURL(url);
@@ -40,6 +40,8 @@ export default function MainLayout({ children }: Props) {
       alert("Error generating report");
     }
   };
+
+  
   
 
   return (
@@ -59,10 +61,16 @@ export default function MainLayout({ children }: Props) {
             <NavLink to="/manage"  className="nav-link">Events</NavLink>
             <button
               className="nav-link"
-              onClick={handleGenerateReport}
+              onClick={() => handleGenerateReport("pdf")}
               >
-                Generate Report
+                Generate Report(PDF)
             </button>
+            <button
+              className="nav-link"
+              onClick={() => handleGenerateReport("csv")}
+              >
+                Generate Report(CSV)
+              </button>
           </nav>
 
           <div className="spacer" />

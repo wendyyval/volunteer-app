@@ -5,6 +5,8 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import PDFDocument from "pdfkit";
+import { createObjectCsvStringifier } from "csv-writer";
+
 
 dotenv.config({ path: "./.env" });
 console.log("Using DATABASE_URL:", process.env.DATABASE_URL);
@@ -24,60 +26,128 @@ app.use(
 
 app.use(express.json());
 
+interface CsvRecord {
+  name: string;
+  event: string;
+  eventDate: string;
+  status: string;
+}
+
 app.get("/api/generate-report", async (req, res) => {
-  try{
+  try {
+    const format = req.query.format || "pdf";
+
     const users = await prisma.user_credentials.findMany({
       include: {
-      user_profile: {
-          select: {
-            full_name: true
-          }
-        },
-        volunteer_history: {
-          include: {
-            event: true
-          }
-        }
-      }
+        user_profile: { select: { full_name: true } },
+        volunteer_history: { include: { event: true } }
+      },
+    });
+
+    if (format === "csv") {
+  const csvWriter = createObjectCsvStringifier({
+    header: [
+      { id: "name", title: "Volunteer Name" },
+      { id: "event", title: "Event" },
+      { id: "eventDate", title: "Event Date" },
+      { id: "status", title: "Status" },
+    ],
   });
+  
+  const records: any[] = [];
+  records.push({
+    name: "",
+    event: "",
+    eventDate: "",
+    status: "",
+  });
+  users.forEach((user) => {
+    const name = user.user_profile?.full_name || "N/A";
+
+    if (user.volunteer_history.length === 0) {
+      records.push({
+        name,
+        event: "No history",
+        eventDate: "",
+        status: "",
+      });
+    } else {
+      user.volunteer_history.forEach((history, index) => {
+        records.push({
+          name: index === 0 ? name : "",
+          event: history.event.event_name,
+          eventDate: history.event.event_date.toISOString().split("T")[0],
+          status: history.status,
+        });
+      });
+    }
+    records.push({
+    name: "",
+    event: "",
+    eventDate: "",
+    status: "",
+  });
+
+  });
+
+  const csvContent =
+    csvWriter.getHeaderString() + csvWriter.stringifyRecords(records);
+
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader(
+    "Content-Disposition",
+    'attachment; filename="volunteer_report.csv"'
+  );
+  return res.send(csvContent);
+}
+
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", 'attachment; filename="volunteer_report.pdf"');
-    
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="volunteer_report.pdf"'
+    );
+
     const doc = new PDFDocument({ margin: 30, size: "A4" });
     doc.pipe(res);
 
     doc.fontSize(20).text("Volunteer Participation Report", { align: "center" });
     doc.moveDown();
 
-    users.forEach((users) => {
-      const fullName = users.user_profile?.full_name || "N/A";
-      doc.fontSize(14).font("Helvetica-Bold").text(`Name: ${fullName}`)
+    users.forEach((user) => {
+      const fullName = user.user_profile?.full_name || "N/A";
+
+      doc.fontSize(14).font("Helvetica-Bold").text(`Name: ${fullName}`);
       doc.moveDown();
-      doc.font("Helvetica").text("-Participation History-");
+      doc.font("Helvetica").text("- Participation History -");
       doc.moveDown();
-      const index = 0
-      if (users.volunteer_history.length === 0) {
-      doc.font("Helvetica").text(" - No participation history");
-    } else {
-      users.volunteer_history.forEach((history, index) => {
-      const eventName = history.event.event_name;
-      const eventDate = history.event.event_date.toDateString();
-      const status = history.status;
-      const number = index + 1;
-      doc.font("Helvetica")
-        .text(`${number}.`, { continued: true })
-        .text(`  ${eventName} | ${eventDate} | ${status}`, {
-        indent: 20
-      });
-  });
-}
+
+      if (user.volunteer_history.length === 0) {
+        doc.text(" - No participation history");
+      } else {
+        user.volunteer_history.forEach((history, index) => {
+          const eventName = history.event.event_name;
+          const eventDate = history.event.event_date.toDateString();
+          const status = history.status;
+          const number = index + 1;
+
+          doc
+            .font("Helvetica")
+            .text(`${number}.`, { continued: true })
+            .text(`  ${eventName} | ${eventDate} | ${status}`, {
+              indent: 20,
+            });
+        });
+      }
+
       doc.moveDown();
-      doc.text("------------------------------------------------------------------------------------------------------------------");
+      doc.text(
+        "------------------------------------------------------------------------------------------------------------"
+      );
       doc.moveDown();
-    })
+    });
+
     doc.end();
-    
-  } catch(err){
+  } catch (err) {
     console.error(err);
     res.status(500).send("Error fetching report data");
   }
