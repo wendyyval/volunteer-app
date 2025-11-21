@@ -361,6 +361,29 @@ app.post("/api/events", async (req, res) => {
   }
 });
 
+app.delete("/api/events/:id", async (req, res) =>{
+  const {id} = req.params;
+
+  try {
+    await prisma.event_skills.deleteMany({
+      where: {event_id: Number(id)},
+    });
+
+    await prisma.volunteer_history.deleteMany({
+      where: {event_id: Number(id)},
+    });
+
+    const deletedEvent = await prisma.event_details.delete({
+      where: {event_id: Number(id)},
+    });
+
+    res.json({message: "Event deleted", deletedEvent});
+  } catch (err){
+    console.error("Error deleteding event:", err);
+    res.status(500).json({ error: "Failed to delete event"});
+  }
+});
+
 app.get("/api/history/:userId", async (req, res) => {
   const { userId } = req.params;
 

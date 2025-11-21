@@ -273,7 +273,6 @@ async function onSubmit(e: React.FormEvent) {
                 className="delete-btn"
                 onClick={() => {
                   deleteEventFromBackend(ev.id);
-                  deleteEventFromBackend(ev.id);
                 }}
               >
                 ×
