@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { clearAuth } from "../utils/auth";
 import BellMenu from "../notifications/BellMenu";
+import {isAdmin} from "../utils/role";
 
 type Props = { children: ReactNode };
 
@@ -29,7 +30,13 @@ export default function MainLayout({ children }: Props) {
             <NavLink to="/" className="nav-link">Home</NavLink>
             <NavLink to="/history" className="nav-link">History</NavLink>
             <NavLink to="/profile" className="nav-link">Profile</NavLink>
-            <NavLink to="/manage"  className="nav-link">Events</NavLink>
+            {isAdmin() && (
+              <>
+                <NavLink to="/manage"  className="nav-link">Events</NavLink>
+                <NavLink to="/assign"  className="nav-link">Match Volunteers</NavLink>
+              </>
+            )}
+            
           </nav>
 
           <div className="spacer" />
