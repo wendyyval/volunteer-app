@@ -13,6 +13,35 @@ export default function MainLayout({ children }: Props) {
     nav("/login");
   }
 
+   const handleGenerateReport = async () => {
+    try {
+      console.log("Downloading report...");
+
+      const res = await fetch("http://localhost:3001/api/generate-report", {
+        method: "GET",
+        credentials: "include", 
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to generate report");
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "volunteer_report.pdf";
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("Error generating report");
+    }
+  };
+  
+
   return (
     <div className="page-shell min-h-screen">
       <header className="site-header">
@@ -28,6 +57,12 @@ export default function MainLayout({ children }: Props) {
             <NavLink to="/history" className="nav-link">History</NavLink>
             <NavLink to="/profile" className="nav-link">Profile</NavLink>
             <NavLink to="/manage"  className="nav-link">Events</NavLink>
+            <button
+              className="nav-link"
+              onClick={handleGenerateReport}
+              >
+                Generate Report
+            </button>
           </nav>
 
           <div className="spacer" />

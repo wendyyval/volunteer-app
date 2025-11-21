@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import PDFDocument from "pdfkit";
 
 dotenv.config({ path: "./.env" });
 console.log("Using DATABASE_URL:", process.env.DATABASE_URL);
@@ -22,6 +23,66 @@ app.use(
 );
 
 app.use(express.json());
+
+app.get("/api/generate-report", async (req, res) => {
+  try{
+    const users = await prisma.user_credentials.findMany({
+      include: {
+      user_profile: {
+          select: {
+            full_name: true
+          }
+        },
+        volunteer_history: {
+          include: {
+            event: true
+          }
+        }
+      }
+  });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="volunteer_report.pdf"');
+    
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+    doc.pipe(res);
+
+    doc.fontSize(20).text("Volunteer Participation Report", { align: "center" });
+    doc.moveDown();
+
+    users.forEach((users) => {
+      const fullName = users.user_profile?.full_name || "N/A";
+      doc.fontSize(14).font("Helvetica-Bold").text(`Name: ${fullName}`)
+      doc.moveDown();
+      doc.font("Helvetica").text("-Participation History-");
+      doc.moveDown();
+      const index = 0
+      if (users.volunteer_history.length === 0) {
+      doc.font("Helvetica").text(" - No participation history");
+    } else {
+      users.volunteer_history.forEach((history, index) => {
+      const eventName = history.event.event_name;
+      const eventDate = history.event.event_date.toDateString();
+      const status = history.status;
+      const number = index + 1;
+      doc.font("Helvetica")
+        .text(`${number}.`, { continued: true })
+        .text(`  ${eventName} | ${eventDate} | ${status}`, {
+        indent: 20
+      });
+  });
+}
+      doc.moveDown();
+      doc.text("------------------------------------------------------------------------------------------------------------------");
+      doc.moveDown();
+    })
+    doc.end();
+    
+  } catch(err){
+    console.error(err);
+    res.status(500).send("Error fetching report data");
+  }
+});
+
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
