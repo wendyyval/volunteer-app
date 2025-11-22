@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import AuthLayout from "../layouts/AuthLayout";
 import toast from "react-hot-toast";
 import { apiFetch } from "../utils/http";
+import { application } from "express";
 
 
 
@@ -25,36 +26,60 @@ export default function Register(){
 
     setLoading(true);
     try {
-        const API_BASE =
-            import.meta.env.VITE_API_URL || "http://localhost:3000";
-
-        console.log("API_BASE →", API_BASE);
-
         const res = await apiFetch("/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-            });
+            method: "POST", 
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({email, password}),
+
+        });
 
        
         const data = await res.json().catch(() => ({} as any));
 
         if (!res.ok) {
       
-        if (res.status === 409) return setErr("This email is already registered.");
-        if (res.status === 400) return setErr("Please check your inputs and try again.");
-        return setErr(typeof data.error === "string" ? data.error : "Registration failed.");
+            if (res.status === 409) return setErr("This email is already registered.");
+            if (res.status === 400) return setErr("Please check your inputs and try again.");
+                return setErr(typeof data.error === "string" ? data.error : "Registration failed.");
         }
 
       
-        toast.success("Account created. Please sign in.");
-        setTimeout(() => nav("/login"), 600);
+        toast.success("Account created! Let's get you started!");
+
+
+        try{
+            const loginRes = await apiFetch("/auth/login", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({email, password}),
+            });
+
+            const loginData = await loginRes.json().catch(() => ({} as any));
+            if (loginRes.ok && loginData.token){
+                localStorage.setItem("token", loginData.token);
+                const role = loginData.user?.role ?? "volunteer";
+                localStorage.setItem("role", role);
+
+                if (loginData.user?.id){
+                    localStorage.setItem("userId", String(loginData.user.id));
+                }
+
+                nav("/profile");
+            }else{
+                nav("/login");
+            }
+
+        }catch{
+            nav("/login");
+        }
     } catch (err) {
         setErr("Network error. Please try again.");
-    } finally {
+    }
+    finally{
         setLoading(false);
     }
-    }
+}
+
     return(
         <AuthLayout>
             <h1 className="text-3xl font-semibold text-white mb-2">Create an account today!</h1>
