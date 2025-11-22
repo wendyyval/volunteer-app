@@ -82,7 +82,15 @@ async function sendEventToBackend(newEvent: Event) {
     if (!res.ok) throw new Error("Failed to save event");
 
     const savedEvent = await res.json();
-    setEvents((prev) => [...prev, savedEvent]);
+
+    setEvents((prev) => [
+      ...prev,
+      {
+        ...savedEvent.event,
+        requiredSkills: savedEvent.linkedSkills ?? []
+      }
+    ]);
+
     toast.success("Event created successfully!");
   } catch (err) {
     console.error("Error creating event:", err);
@@ -105,40 +113,32 @@ async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr("");
 
-    if (
-      !eventName ||
-      !description ||
-      !location ||
-      requiredSkills.length === 0 ||
-      !urgency ||
-      eventDate.length === 0
-    ) {
+    if (!eventName || !description || !location || requiredSkills.length === 0 || !urgency || eventDate.length === 0) {
       return setErr("Please fill in all required fields.");
     }
     const newEvent: Event = {
-          id: uuidv4(),
-          eventName,
-          description,
-          location,
-          requiredSkills,
-          urgency,
-          eventDate: eventDate.map((d) => d.format("YYYY-MM-DD")),
-        };
+      id: uuidv4(),
+      eventName,
+      description,
+      location,
+      requiredSkills,
+      urgency,
+      eventDate: eventDate.map((d) => d.format("YYYY-MM-DD")),
+    };
+    await sendEventToBackend(newEvent);
+    setEventName("");
+    setDescription("");
+    setLocation("");
+    setRequiredSkills([]);
+    setUrgency("");
+    setEventDate([]);
+    await fetchEventsFromBackend();
+}
 
-        await sendEventToBackend(newEvent);
-
-        setEventName("");
-        setDescription("");
-        setLocation("");
-        setRequiredSkills([]);
-        setUrgency("");
-        setEventDate([]);
-
-        await fetchEventsFromBackend();
-      }   
-      useEffect(() => {
-        fetchEventsFromBackend();
-      }, []);
+    useEffect(() => {
+      fetchEventsFromBackend();
+    },
+    []);
 
   return (
     <EventManageLayout
@@ -299,7 +299,7 @@ async function onSubmit(e: React.FormEvent) {
                 </p>
                 <p>
                   <strong>Skills:</strong>{" "}
-                  {ev.requiredSkills.map((skill, i) => (
+                  {(ev.requiredSkills || []).map((skill, i) => (
                     <span
                       key={i}
                       style={{
@@ -338,21 +338,20 @@ async function onSubmit(e: React.FormEvent) {
                 </p>
                 <p>
                   <strong>Date:</strong>{" "}
-                  {ev.eventDate.map((d, i) => (
+                  {(ev.eventDate || []).map((d, i) => (
                     <span
-                      key={i}
-                      style={{
-                        backgroundColor: "#f0f9ff",
-                        color: "#1e3a8a",
-                        padding: "2px 6px",
-                        borderRadius: "6px",
-                        fontSize: "0.85rem",
-                        marginRight: "4px",
-                        display: "inline-block",
-                      }}
+                    key={i}
+                    style={{
+                    backgroundColor: "#f0f9ff",
+                    color: "#1e3a8a",
+                    padding: "2px 6px",
+                    borderRadius: "6px",
+                    fontSize: "0.85rem",
+                    marginRight: "4px",
+                    display: "inline-block",
+                    }}
                     >
-                      {d}
-                      {d}
+                    {d}
                     </span>
                   ))}
                 </p>
