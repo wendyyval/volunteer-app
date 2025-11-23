@@ -33,51 +33,50 @@ interface CsvRecord {
   status: string;
 }
 
-app.get("/api/generate-report", async (req, res) => {
+app.get("/api/generate-volunteer-report", async (req, res) => {
   try {
     const format = req.query.format || "pdf";
-
     const users = await prisma.user_credentials.findMany({
       include: {
-        user_profile: { select: { full_name: true } },
-        volunteer_history: { include: { event: true } }
+      user_profile: { select: { full_name: true } },
+      volunteer_history: { include: { event: true } }
       },
     });
 
     if (format === "csv") {
-  const csvWriter = createObjectCsvStringifier({
-    header: [
-      { id: "name", title: "Volunteer Name" },
-      { id: "event", title: "Event" },
-      { id: "eventDate", title: "Event Date" },
-      { id: "status", title: "Status" },
-    ],
-  });
+      const csvWriter = createObjectCsvStringifier({
+        header: [
+          { id: "name", title: "Volunteer Name" },
+          { id: "event", title: "Event" },
+          { id: "eventDate", title: "Event Date" },
+          { id: "status", title: "Status" },
+        ],  
+      });
   
-  const records: any[] = [];
-  records.push({
-    name: "",
-    event: "",
-    eventDate: "",
-    status: "",
-  });
-  users.forEach((user) => {
-    const name = user.user_profile?.full_name || "N/A";
-
-    if (user.volunteer_history.length === 0) {
+      const records: any[] = [];
       records.push({
+      name: "",
+      event: "",
+      eventDate: "",
+      status: "",
+      }); 
+      users.forEach((user) => {
+      const name = user.user_profile?.full_name || "N/A";
+
+      if (user.volunteer_history.length === 0) {
+        records.push({
         name,
         event: "No history",
         eventDate: "",
         status: "",
-      });
-    } else {
-      user.volunteer_history.forEach((history, index) => {
+        });
+      } else {
+        user.volunteer_history.forEach((history, index) => {
         records.push({
-          name: index === 0 ? name : "",
-          event: history.event.event_name,
-          eventDate: history.event.event_date.toISOString().split("T")[0],
-          status: history.status,
+        name: index === 0 ? name : "",
+        event: history.event.event_name,
+        eventDate: history.event.event_date.toISOString().split("T")[0],
+        status: history.status,
         });
       });
     }
@@ -86,8 +85,7 @@ app.get("/api/generate-report", async (req, res) => {
     event: "",
     eventDate: "",
     status: "",
-  });
-
+    });
   });
 
   const csvContent =
@@ -152,6 +150,126 @@ app.get("/api/generate-report", async (req, res) => {
     res.status(500).send("Error fetching report data");
   }
 });
+
+app.get("/api/generate-event-report", async (req, res) =>{
+  try{
+    const format = req.query.format || "pdf";
+
+    const events = await prisma.event_details.findMany({
+      include:{
+        volunteer_history:{
+          include:{
+            user:{
+              include:{
+                user_profile:true
+              }
+            }
+          }
+        }
+      }
+    });
+    if (format == "csv") {
+      const csvWriter = createObjectCsvStringifier({
+        header: [
+          {id: "eventNmae", title: "Event Name"},
+          {id: "eventDate", title: "Event Date"},
+          {id: "volunteer", title: "Volunteer"},
+          {id: "status", title: "Status"}
+        ]
+      });
+      const records: any[] = [];
+
+      records.push({
+        eventName: "",
+        eventDate: "",
+        volunteer: "",
+        status: ""
+      });
+
+      events.forEach((event) => {
+        const eventName = event.event_name;
+        const eventDate = event.event_date.toISOString().split("T")[0];
+
+        if(event.volunteer_history.length === 0){
+          records.push({
+            eventName,
+            eventDate,
+            volunteer: "No volunteers",
+            status: ""
+          });
+        } else {
+          event.volunteer_history.forEach((vh, index) =>{
+            records.push({
+              eventNmae: index === 0 ? eventName: "",
+              eventDate: index === 0 ? eventDate: "",
+              volunteer: vh.user.user_profile?.full_name || "N/A",
+              status: vh.status
+            });
+          });
+        }
+
+        records.push({
+          eventName: "",
+          eventDate: "",
+          volunteer: "",
+          status: ""
+        });
+      });
+
+      const csvContent = csvWriter.getHeaderString() + csvWriter.stringifyRecords(records);
+
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", 'attachment; filename="event_details.csv"');
+      return res.send(csvContent);
+    }
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition",'attachment; filename="event_details.pdf"');
+
+    const doc = new PDFDocument({margin:30, size: "A4"});
+    doc.pipe(res)
+
+    doc.fontSize(20).text("Event Details Report", {align: "center"});
+    doc.moveDown();
+
+    events.forEach((event) =>{
+      const eventName = event.event_name;
+      const eventDate = event.event_date.toDateString();
+      const volunteers = event.volunteer_history.length;
+
+      doc.fontSize(14).font("Helvetica-Bold").text(`Event: ${eventName}`);
+      doc.font("Helvetica").text(`Date: ${eventDate}`);
+      doc.text(`Total Volunteers: ${volunteers}`);
+      doc.moveDown();
+      doc.text("- Volunteer List -");
+      doc.moveDown();
+
+      if (volunteers === 0) {
+        doc.text(" - No volunteers registered");
+      } else {
+        event.volunteer_history.forEach((vh, index) => {
+          const number = index + 1;
+          const name = vh.user.user_profile?.full_name || "N/A";
+          const status = vh.status;
+
+          doc
+            .font("Helvetica")
+            .text(`${number}.`, { continued: true })
+            .text(`  ${name} | ${status}`, { indent: 20 });
+        });
+      }
+      doc.moveDown();
+      doc.text(
+        "------------------------------------------------------------------------------------------------------------"
+      );
+      doc.moveDown();
+    });
+    doc.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error generating event report");
+  }
+})
 
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
