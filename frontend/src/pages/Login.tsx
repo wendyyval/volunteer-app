@@ -13,41 +13,51 @@ export default function Login(){
     const [loading, setLoading] = useState(false);
 
     async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setErr("");
+        e.preventDefault();
+        setErr("");
 
-    // quick client-side checks
-    if (!email || !password) return setErr("Email and password are required");
-    if (!/\S+@\S+\.\S+/.test(email)) return setErr("Email is invalid. Please enter a valid email address.");
-    if (password.length < 6) return setErr("Password must be at least 6 characters long.");
+        // quick client-side checks
+        if (!email || !password) return setErr("Email and password are required");
+        if (!/\S+@\S+\.\S+/.test(email)) return setErr("Email is invalid. Please enter a valid email address.");
+        if (password.length < 6) return setErr("Password must be at least 6 characters long.");
 
-    setLoading(true);
-    try {
-        const res = await apiFetch("/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        });
+        setLoading(true);
+        try {
+            const res = await apiFetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+            });
 
-        const data = await res.json().catch(() => ({} as any));
+            const data = await res.json().catch(() => ({} as any));
 
-        if (!res.ok) {
-        if (res.status === 401) return setErr("Invalid email or password.");
-        if (res.status === 400) return setErr("Please check your inputs and try again.");
-        return setErr(typeof data.error === "string" ? data.error : "Login failed.");
+            if (!res.ok) {
+                if (res.status === 401) return setErr("Invalid email or password.");
+                if (res.status === 400) return setErr("Please check your inputs and try again.");
+                    return setErr(typeof data.error === "string" ? data.error : "Login failed.");
+            }
+
+            // success -> save token & role, navigate
+            localStorage.setItem("token", data.token);
+
+            const role = data.user?.role ?? "volunteer";
+            localStorage.setItem("role", role);
+
+
+            if (data.user?.role) {
+                if (data.user?.id) localStorage.setItem("userId", String(data.user.id));
+            }
+            
+            if(role === "admin"){
+                nav("/admin");
+            }else{
+                nav("/history");
+            }
+        } catch {
+            setErr("Network error. Please try again.");
+        } finally {
+            setLoading(false);
         }
-
-        // success -> save token & role, navigate
-        localStorage.setItem("token", data.token);
-        if (data.user?.role) localStorage.setItem("role", data.user.role);
-        if (data.user?.id) localStorage.setItem("userId", data.user.id);
-        // optional: toast.success("Welcome back!");
-        nav("/profile"); // or "/history" — can be changed
-    } catch {
-        setErr("Network error. Please try again.");
-    } finally {
-        setLoading(false);
-    }
     }
 
     return(
@@ -79,7 +89,7 @@ export default function Login(){
             {err && <p className='error mt-1'>{err}</p>}
 
             <button className='btn-primary btn-block h-12 text-base mt-2' type = "submit" disabled={loading}>
-                    {loading ? "Creating..." : "Sign in"}
+                    {loading ? "Signing in..." : "Sign in"}
                 </button>
             </form>
         </AuthLayout>

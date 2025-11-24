@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { z } from "zod";
+import { email, z } from "zod";
 
 dotenv.config({ path: "./.env" });
 console.log("Using DATABASE_URL:", process.env.DATABASE_URL);
@@ -76,7 +76,7 @@ app.post("/api/auth/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    //Optional token can be added
+
     return res.json({
       success: true,
       message: "Login successful",
@@ -127,6 +127,38 @@ app.post("/api/users/saveprofile", async (req, res) => {
   } catch (err) {
     console.error("Failed to save profile:", err);
     res.status(500).json({ error: "Failed to save profile" });
+  }
+});
+
+
+app.get("/api/users", async (_req, res) => {
+  try{
+    const users = await prisma.user_credentials.findMany({
+      include: {
+        user_profile: true,
+      },
+    });
+
+    res.json(users.map(u => ({
+        id: u.id,
+        email: u.email,
+        profile: u.user_profile ? {
+          fullName: u.user_profile.full_name,
+          city: u.user_profile.city,
+          state: u.user_profile.state,
+          zip: u.user_profile.zip,
+          skills: u.user_profile.preferences || [],
+          availability: u.user_profile.preferences || "",
+          preferences: u.user_profile.preferences || null,
+
+      }
+      : null,
+    }))
+  );
+
+  }catch(err){
+    console.error("Error fetching users: ", err);
+    res.status(500).json({error: "Failed to fetch users"});
   }
 });
 
