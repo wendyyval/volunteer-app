@@ -1,18 +1,18 @@
 ﻿import React from 'react';
 import './EventInfo.css';
 
-interface Event {
-    id: string;
+export interface AppEvent {
+    id: number;
     eventName: string;
     description: string;
     location: string;
     requiredSkills: string[];
     urgency: string;
-    eventDate: string[];
+    eventDate: string;
 }
 
 interface Props {
-    event: Event;
+    event: AppEvent;
 }
 
 const EventInfo: React.FC<Props> = ({ event }) => {
