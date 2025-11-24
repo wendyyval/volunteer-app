@@ -16,30 +16,33 @@
     padding: 1rem;
     height: 750px;
     overflow-y: auto;
+    background: #151515;
+    border-radius: 8px;
 }
 
 .volunteer-item {
     width: 450px;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #2c2c2c;
+    color: #fff;
     cursor: pointer;
-    transition: background 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.2s, transform 0.2s;
+}
+.volunteer-item:hover {
+    background-color: #716d6d;
+    transform: scale(1.02);
 }
 
-.volunteer-panel .volunteer-item {
-    background-color: #403e3e;
+
+.volunteer-item.selected {
+    background-color: #2b65a4;
+    font-weight: bold;
+    border-color: #4aa3ff;
 }
-
-    .volunteer-panel .volunteer-item:hover {
-        background-color: #716d6d;
-    }
-
-
-    .volunteer-panel .volunteer-item.selected {
-        background-color: #2b65a4;
-        font-weight: bold;
-    }
 
 
 /* Volunteer Details panel */
@@ -56,7 +59,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center; 
-    align-items: flex-start; 
+    align-items: flex-start;
+    border-radius: 8px;
 }
 
 .details-container {
@@ -65,14 +69,13 @@
     top: 140px;
     left: 985px;
     flex: 2;
-    border: 3px solid var(--stroke); 
+    border: 3px solid #555; 
     border-radius: 8px; 
-    background-color: var(--card); 
+    background-color: #1f1f1f; 
     padding: 1rem;
     height: 400px;
     overflow-y: auto;
-    
-    color: #000;
+    color: #fff;
 }
 
 
@@ -83,25 +86,3 @@
     font-size: 2rem;
     color: #fff; 
 }
-
-.volunteer-item {
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ccc; 
-    border-radius: 8px; 
-    background-color: #f9f9f9; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-}
-
-    .volunteer-item:hover {
-        background-color: #e0f7ff;
-        transform: scale(1.02); 
-    }
-
-    .volunteer-item.selected {
-        background-color: #a0d8ff;
-        font-weight: bold;
-        border-color: #0077cc;
-    }

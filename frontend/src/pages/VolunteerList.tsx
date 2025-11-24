@@ -1,17 +1,27 @@
 ﻿import { useState, useEffect } from 'react'
 import './VolunteerList.css'
 import VolunteerDetails from './VolunteerDetails'
-import type { Volunteer } from '../server/src/types'  // ✅ shared import
+import {apiFetch} from '../utils/http';
+
+interface Volunteer{
+    id: number;
+    name: string;
+    city: string;
+    state: string;
+    zip: string;
+    skills: string[];
+    availability: string[];
+    preferences: string | null;
+}
 
 function VolunteerList() {
     const [volunteers, setVolunteers] = useState<Volunteer[]>([])
-    const [selectedVolunteerId, setSelectedVolunteerId] = useState<string | null>(null)
+    const [selectedVolunteerId, setSelectedVolunteerId] = useState<number | null>(null)
 
     useEffect(() => {
         async function fetchVolunteers() {
             try {
-                const res = await fetch('/api/users');
-
+                const res = await apiFetch('/users');
                 if (!res.ok) throw new Error(`HTTP error ${res.status}`)
 
                 const users = await res.json()
@@ -24,9 +34,10 @@ function VolunteerList() {
                         city: user.profile.city,
                         state: user.profile.state,
                         zip: user.profile.zip,
-                        skills: user.profile.skills,
-                        availability: user.profile.availability,
-                        preferences: user.profile.preferences,
+                        skills: Array.isArray(user.profile.skills) ? user.profile.skills : [],
+                        availability: Array.isArray(user.profile.availability) ? user.profile.availability : [],
+                        preferences: user.profile.preferences ?? null,
+                        currentEvent: user.profile.currentEvent ?? null,
                     }))
 
 
@@ -56,7 +67,11 @@ function VolunteerList() {
                         <div
                             key={v.id}
                             className={`volunteer-item ${selectedVolunteerId === v.id ? 'selected' : ''}`}
-                            onClick={() => setSelectedVolunteerId(v.id)}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setSelectedVolunteerId(v.id);
+                            }}
                         >
                             {v.name}
                         </div>

@@ -1,12 +1,14 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { clearAuth } from "../utils/auth";
 import BellMenu from "../notifications/BellMenu";
+import {isAdmin} from "../utils/role";
 
 type Props = { children: ReactNode };
 
 export default function MainLayout({ children }: Props) {
   const nav = useNavigate();
+  const {pathname} = useLocation();
 
   function signOut() {
     clearAuth();
@@ -24,11 +26,18 @@ export default function MainLayout({ children }: Props) {
           </Link>
 
           {/* Nav */}
-          <nav className="site-nav" aria-label="Primary">
+          <nav className="flex gap-6">
+            <NavLink to="/" className="nav-link">Home</NavLink>
             <NavLink to="/history" className="nav-link">History</NavLink>
             <NavLink to="/profile" className="nav-link">Profile</NavLink>
-            <NavLink to="/manage"  className="nav-link">Events</NavLink>
-            <NavLink to="/reports" className="nav-link">Reports</NavLink>
+            {isAdmin() && (
+              <>
+                <NavLink to="/manage"  className="nav-link">Events</NavLink>
+                <NavLink to="/assign"  className="nav-link">Match Volunteers</NavLink>
+                <NavLink to="/reports" className="nav-link">Reports</NavLink>
+              </>
+            )}
+            
           </nav>
 
           <div className="spacer" />
@@ -41,7 +50,9 @@ export default function MainLayout({ children }: Props) {
         </div>
       </header>
 
-      <main className="page-frame">{children}</main>
+      <main className={pathname === "/" ? "" : "page-frame"}>
+        {children}
+      </main>
     </div>
   );
 }

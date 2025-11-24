@@ -6,20 +6,24 @@ import VolunteerHistory from "./pages/VolunteerHistory";
 import VolunteerAssign from "./pages/VolunteerAssignment";
 import EventManage from "./pages/EventManage";
 import Reports from "./pages/Reports";
-
+import Home from "./pages/Home";
+import { isAdmin } from "./utils/role";
+import AdminHome from "./pages/AdminHome";
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={< Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/history" element={<VolunteerHistory />} />
-      <Route path="/assign" element={<VolunteerAssign />} />
-      <Route path="/manage" element={< EventManage/>} />
-      <Route path="/reports" element={<Reports/>} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+    {/*ADMIN ONLY ROUTES*/}
+      <Route path="/admin" element={isAdmin() ? <AdminHome /> : <Navigate to="/" replace />} />
+      <Route path="/assign" element={isAdmin() ? <VolunteerAssign /> : <Navigate to="/" replace />} />
+      <Route path="/manage" element={isAdmin() ? < EventManage/> : <Navigate to="/" replace/>} />
+      <Route path="/reports" element={isAdmin() ? <Reports /> : <Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
