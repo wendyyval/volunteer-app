@@ -1,55 +1,109 @@
 ﻿import React from 'react';
 import './VolunteerDetails.css';
+import { apiFetch } from '../utils/http';
 
-import type { Volunteer } from '../server/src/types'  // ✅ shared import
-
-interface Props {
-    volunteer: Volunteer;
+interface SimpleEvent {
+  id: number;
+  eventName: string;
 }
 
-const VolunteerDetails: React.FC<Props> = ({ volunteer }) => {
-    return (
-        <div className="details-panel">
+interface Volunteer {
+  id: number;
+  name: string;
+  city: string;
+  state: string;
+  zip: string;
+  skills: string[];
+  availability: string[];
+  preferences: string | null;
+}
 
-            <div className="header-with-button">
-                <h2>{volunteer.name}</h2>
-                <button className="assign-button">Assign Selected Event</button>
-            </div>
+interface Props {
+  volunteer: Volunteer;
+  selectedEvent: SimpleEvent | null;
+  onAssigned?: () => void;
+}
 
-            <div className="tags-container">
-                <strong>Skills:</strong>
-                {volunteer.skills.map(skill => (
-                    <span key={skill} className="tag">{skill}</span>
-                ))}
-            </div>
+const VolunteerDetails: React.FC<Props> = ({ volunteer, selectedEvent, onAssigned }) => {
 
-            <hr className="details-divider" />
+  async function assignEvent() {
+    if (!selectedEvent) {
+      alert("Select an event first!");
+      return;
+    }
 
-            {/* Volunteer Info Section */}
-            <div className="details-grid">
-                <div className="details-item">
-                    <strong>Location:</strong>
-                    <p>{volunteer.city}, {volunteer.state}</p>
-                </div>
-                <div className="details-item">
-                    <strong>ZipCode:</strong>
-                    <p>{volunteer.zip}</p>
-                </div>
-                <div className="details-item">
-                    <strong>Availability:</strong>
-                    <p>{volunteer.availability.join(', ')}</p>
-                </div>
-                <div className="details-item">
-                    <strong>Current Assigned Event:</strong>
-                    <p>{volunteer.currentEvent || 'None'}</p>
-                </div>
-            </div>
+    try {
+      const res = await apiFetch("/history", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: volunteer.id,
+          event_id: selectedEvent.id,
+          status: "Registered"
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        console.error(err);
+        alert("Failed to assign event.");
+        return;
+      }
+
+      alert("Event assigned!");
+      if (onAssigned) onAssigned();
+
+    } catch (err) {
+      console.error("Assign error:", err);
+    }
+  }
+
+  return (
+    <div className="details-panel">
+
+      <div className="header-with-button">
+        <h2>{volunteer.name}</h2>
+        <button className="assign-button" onClick={assignEvent}>
+          Assign Selected Event
+        </button>
+      </div>
+
+      <div className="tags-container">
+        <strong>Skills:</strong>
+        {volunteer.skills.map((skill) => (
+          <span key={skill} className="tag">
+            {skill}
+          </span>
+        ))}
+      </div>
+
+      <hr className="details-divider" />
+
+      <div className="details-grid">
+        <div className="details-item">
+          <strong>Location:</strong>
+          <p>
+            {volunteer.city}, {volunteer.state}
+          </p>
         </div>
-    );
+
+        <div className="details-item">
+          <strong>ZipCode:</strong>
+          <p>{volunteer.zip}</p>
+        </div>
+
+        <div className="details-item">
+          <strong>Availability:</strong>
+          <p>{volunteer.availability.join(", ")}</p>
+        </div>
+
+        <div className="details-item">
+          <strong>Assignments:</strong>
+          <p>View in volunteer history.</p>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default VolunteerDetails;
-
-
-
-

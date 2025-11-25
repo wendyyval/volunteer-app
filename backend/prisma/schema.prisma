@@ -11,7 +11,7 @@ model user_credentials {
   id                Int                 @id @default(autoincrement())
   email             String              @unique
   password_hash     String
-  role              String @default("volunteer")
+  role              String              @default("volunteer")
   created_at        DateTime            @default(now())
   updated_at        DateTime            @updatedAt
   user_profile      user_profile?
@@ -30,7 +30,6 @@ model user_profile {
   availability     availability[]
   user_credentials user_credentials @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_skills      user_skills[]
-
   @@map("user_profile")
 }
 
