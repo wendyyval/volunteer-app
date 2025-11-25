@@ -11,7 +11,18 @@ import { apiFetch } from "../utils/http";
 
 
 export default function Profile() {
+
     const navigate = useNavigate();
+    const nav = useNavigate();
+
+    useEffect(() => {
+        const role = localStorage.getItem("role");
+        if (role === "admin") {
+            nav("/admin");
+        }
+    }, []);
+
+
     const [fullName, setFullName] = useState("")
     const [address1, setAddress1] = useState("")
     const [address2, setAddress2] = useState("")

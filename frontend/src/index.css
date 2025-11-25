@@ -1124,3 +1124,11 @@ td.skills-cell{
   line-height: 1.5;
   opacity: 0.9;
 }
+
+.assignment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+}

@@ -11,11 +11,13 @@ model user_credentials {
   id                Int                 @id @default(autoincrement())
   email             String              @unique
   password_hash     String
-  role              String @default("volunteer")
+  role              String              @default("volunteer")
   created_at        DateTime            @default(now())
   updated_at        DateTime            @updatedAt
   user_profile      user_profile?
   volunteer_history volunteer_history[]
+  user_skills       user_skills[]
+  notifications     Notification[]
 }
 
 model user_profile {
@@ -44,10 +46,12 @@ model skills {
 }
 
 model user_skills {
-  user_id  Int
-  skill_id Int
-  skill    skills       @relation(fields: [skill_id], references: [skill_id], onDelete: Cascade)
-  user     user_profile @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id            Int
+  skill_id           Int
+  skill              skills            @relation(fields: [skill_id], references: [skill_id], onDelete: Cascade)
+  user               user_profile      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_credentials   user_credentials? @relation(fields: [user_credentialsId], references: [id])
+  user_credentialsId Int?
 
   @@id([user_id, skill_id])
   @@index([skill_id], map: "user_skills_skill_id_fkey")
@@ -104,6 +108,18 @@ model volunteer_history {
 model states {
   code String @id
   name String
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  message    String
+  created_at DateTime @default(now())
+  read       Boolean  @default(false)
+
+  user user_credentials @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
 }
 
 enum ParticipationStatus {

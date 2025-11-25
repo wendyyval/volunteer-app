@@ -51,9 +51,10 @@ export default function EventManage() {
         new Date(ev.event_date ?? Date.now()).toLocaleDateString(),
       ],
       requiredSkills:
-        ev.requiredSkills ??
-        ev.event_skills?.map((es: any) => es.skill?.skill_name ?? "") ??
-        [],
+        (ev.requiredSkills ??
+        ev.event_skills?.map((es: any) => es.skill?.skill_name) ??
+        [])
+        .filter(Boolean),
     }));
 
     console.log("Fetched events:", formatted);

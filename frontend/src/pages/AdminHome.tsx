@@ -1,10 +1,24 @@
 import { useNavigate } from "react-router-dom";
 
+
 export default function AdminHome(){
     const nav = useNavigate();
+    
+    function handleLogout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("user");
+        nav("/login");
+    }
 
     return(
+        
         <div className="admin-dash">
+            <div style={{ display: "flex", justifyContent: "flex-end", padding: "10px" }}>
+                <button className="signout-btn" onClick={handleLogout}>
+                    Sign Out
+                </button>
+            </div>
             <h1 className="admin-title">Administrator Dashboard</h1>
             <div className="admin-section">
                 <div className="admin-card" onClick={() => nav("/manage")}>

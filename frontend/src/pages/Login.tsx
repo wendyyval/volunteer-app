@@ -39,16 +39,11 @@ export default function Login(){
 
             // success -> save token & role, navigate
             localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));    
+            localStorage.setItem("role", data.user.role);
 
-            const role = data.user?.role ?? "volunteer";
-            localStorage.setItem("role", role);
 
-
-            if (data.user?.role) {
-                if (data.user?.id) localStorage.setItem("userId", String(data.user.id));
-            }
-            
-            if(role === "admin"){
+            if (data.user.role === "admin") {
                 nav("/admin");
             }else{
                 nav("/history");

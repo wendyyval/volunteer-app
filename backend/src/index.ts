@@ -6,11 +6,13 @@ import bcrypt from "bcryptjs";
 import PDFDocument from "pdfkit";
 import { createObjectCsvStringifier } from "csv-writer";
 import { email, z } from "zod";
+import cron from "node-cron";
 
 dotenv.config({ path: "./.env" });
 console.log("Using DATABASE_URL:", process.env.DATABASE_URL);
 
 const app = express();
+
 app.use(
   cors({
     origin: [
@@ -18,7 +20,7 @@ app.use(
       "https://volunteer-gxhxcwj8w-wendy-valdezs-projects.vercel.app"
     ],
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-user-id"],
     credentials: true,
   })
 );
@@ -475,6 +477,18 @@ app.post("/api/events", async (req, res) => {
         event_date: new Date(eventData.event_date),
       },
     });
+    const volunteers = await prisma.user_credentials.findMany({
+          where: { role: "volunteer" },
+    });
+
+    for (const v of volunteers) {
+      await prisma.notification.create({
+        data: {
+          user_id: v.id,
+          message: `A new event "${event.event_name}" has been added!`,
+        },
+      });
+    }    
 
     const skills = await prisma.skills.findMany({
       where: { skill_name: { in: requiredSkills } },
@@ -591,6 +605,54 @@ app.post("/api/history", async (req, res) => {
 
 
 const port = process.env.PORT || 3001;
+
+
+cron.schedule("0 8 * * *", async () => {
+  console.log("Running daily event reminder job...");
+  console.log("🔥 Reminder cron job triggered at", new Date().toLocaleString());
+
+  const today = new Date();
+
+  try {
+    const upcomingEvents = await prisma.event_details.findMany({
+      include: {
+        volunteer_history: true,
+      },
+    });
+
+    for (const ev of upcomingEvents) {
+      const eventDate = new Date(ev.event_date);
+
+      const diffDays =
+        Math.floor((eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+      let reminderMessage = null;
+
+      if (diffDays === 7) {
+        reminderMessage = `Reminder: Your event "${ev.event_name}" is in 1 week!`;
+      }
+      if (diffDays === 1) {
+        reminderMessage = `Reminder: Your event "${ev.event_name}" is tomorrow!`;
+      }
+      if (diffDays === 0) {
+        reminderMessage = `Reminder: Your event "${ev.event_name}" is today!`;
+      }
+
+      if (reminderMessage) {
+        for (const vh of ev.volunteer_history) {
+          await prisma.notification.create({
+            data: {
+              user_id: vh.user_id,
+              message: reminderMessage,
+            },
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Reminder job failed:", err);
+  }
+});
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => console.log(`Server running on port ${port}`));

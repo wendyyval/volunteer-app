@@ -74,7 +74,7 @@ export default function BellMenu() {
                     <div className="notif-main">
                       <div className="notif-title">{n.title}</div>
                       {n.message && <div className="notif-msg">{n.message}</div>}
-                      <div className="notif-meta">{n.topic} · {timeAgo(n.ts)} ago</div>
+                      <div className="notif-meta">{n.topic} · {timeAgo(n.ts ?? Date.now())} ago</div>
                     </div>
                   </div>
                   {!n.read && (
@@ -92,7 +92,7 @@ export default function BellMenu() {
   );
 }
 
-function iconFor(kind: "success" | "info" | "warning" | "error") {
+function iconFor(kind?: string) {
   switch (kind) {
     case "success": return "✔️";
     case "warning": return "⚠️";
