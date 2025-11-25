@@ -14,7 +14,7 @@ export default function MainLayout({ children }: Props) {
     clearAuth();
     nav("/login");
   }
-
+  
   return (
     <div className="page-shell min-h-screen">
       <header className="site-header">
@@ -34,6 +34,7 @@ export default function MainLayout({ children }: Props) {
               <>
                 <NavLink to="/manage"  className="nav-link">Events</NavLink>
                 <NavLink to="/assign"  className="nav-link">Match Volunteers</NavLink>
+                <NavLink to="/reports" className="nav-link">Reports</NavLink>
               </>
             )}
             

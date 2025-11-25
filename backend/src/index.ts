@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import PDFDocument from "pdfkit";
+import { createObjectCsvStringifier } from "csv-writer";
 import { email, z } from "zod";
 import cron from "node-cron";
 
@@ -24,6 +26,252 @@ app.use(
 );
 
 app.use(express.json());
+
+interface CsvRecord {
+  name: string;
+  event: string;
+  eventDate: string;
+  status: string;
+}
+
+app.get("/api/generate-volunteer-report", async (req, res) => {
+  try {
+    const format = req.query.format || "pdf";
+    const users = await prisma.user_credentials.findMany({
+      include: {
+      user_profile: { select: { full_name: true } },
+      volunteer_history: { include: { event: true } }
+      },
+    });
+
+    if (format === "csv") {
+      const csvWriter = createObjectCsvStringifier({
+        header: [
+          { id: "name", title: "Volunteer Name" },
+          { id: "event", title: "Event" },
+          { id: "eventDate", title: "Event Date" },
+          { id: "status", title: "Status" },
+        ],  
+      });
+  
+      const records: any[] = [];
+      records.push({
+      name: "",
+      event: "",
+      eventDate: "",
+      status: "",
+      }); 
+      users.forEach((user) => {
+      const name = user.user_profile?.full_name || "N/A";
+
+      if (user.volunteer_history.length === 0) {
+        records.push({
+        name,
+        event: "No history",
+        eventDate: "",
+        status: "",
+        });
+      } else {
+        user.volunteer_history.forEach((history, index) => {
+        records.push({
+        name: index === 0 ? name : "",
+        event: history.event.event_name,
+        eventDate: history.event.event_date.toISOString().split("T")[0],
+        status: history.status,
+        });
+      });
+    }
+    records.push({
+    name: "",
+    event: "",
+    eventDate: "",
+    status: "",
+    });
+  });
+
+  const csvContent =
+    csvWriter.getHeaderString() + csvWriter.stringifyRecords(records);
+
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader(
+    "Content-Disposition",
+    'attachment; filename="volunteer_report.csv"'
+  );
+  return res.send(csvContent);
+}
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="volunteer_report.pdf"'
+    );
+
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+    doc.pipe(res);
+
+    doc.fontSize(20).text("Volunteer Participation Report", { align: "center" });
+    doc.moveDown();
+
+    users.forEach((user) => {
+      const fullName = user.user_profile?.full_name || "N/A";
+
+      doc.fontSize(14).font("Helvetica-Bold").text(`Name: ${fullName}`);
+      doc.moveDown();
+      doc.font("Helvetica").text("- Participation History -");
+      doc.moveDown();
+
+      if (user.volunteer_history.length === 0) {
+        doc.text(" - No participation history");
+      } else {
+        user.volunteer_history.forEach((history, index) => {
+          const eventName = history.event.event_name;
+          const eventDate = history.event.event_date.toDateString();
+          const status = history.status;
+          const number = index + 1;
+
+          doc
+            .font("Helvetica")
+            .text(`${number}.`, { continued: true })
+            .text(`  ${eventName} | ${eventDate} | ${status}`, {
+              indent: 20,
+            });
+        });
+      }
+
+      doc.moveDown();
+      doc.text(
+        "------------------------------------------------------------------------------------------------------------"
+      );
+      doc.moveDown();
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching report data");
+  }
+});
+
+app.get("/api/generate-event-report", async (req, res) =>{
+  try{
+    const format = req.query.format || "pdf";
+
+    const events = await prisma.event_details.findMany({
+      include:{
+        volunteer_history:{
+          include:{
+            user:{
+              include:{
+                user_profile:true
+              }
+            }
+          }
+        }
+      }
+    });
+    if (format == "csv") {
+      const csvWriter = createObjectCsvStringifier({
+        header: [
+          {id: "eventNmae", title: "Event Name"},
+          {id: "eventDate", title: "Event Date"},
+          {id: "volunteer", title: "Volunteer"},
+          {id: "status", title: "Status"}
+        ]
+      });
+      const records: any[] = [];
+
+      records.push({
+        eventName: "",
+        eventDate: "",
+        volunteer: "",
+        status: ""
+      });
+
+      events.forEach((event) => {
+        const eventName = event.event_name;
+        const eventDate = event.event_date.toISOString().split("T")[0];
+
+        if(event.volunteer_history.length === 0){
+          records.push({
+            eventName,
+            eventDate,
+            volunteer: "No volunteers",
+            status: ""
+          });
+        } else {
+          event.volunteer_history.forEach((vh, index) =>{
+            records.push({
+              eventNmae: index === 0 ? eventName: "",
+              eventDate: index === 0 ? eventDate: "",
+              volunteer: vh.user.user_profile?.full_name || "N/A",
+              status: vh.status
+            });
+          });
+        }
+
+        records.push({
+          eventName: "",
+          eventDate: "",
+          volunteer: "",
+          status: ""
+        });
+      });
+
+      const csvContent = csvWriter.getHeaderString() + csvWriter.stringifyRecords(records);
+
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", 'attachment; filename="event_details.csv"');
+      return res.send(csvContent);
+    }
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition",'attachment; filename="event_details.pdf"');
+
+    const doc = new PDFDocument({margin:30, size: "A4"});
+    doc.pipe(res)
+
+    doc.fontSize(20).text("Event Details Report", {align: "center"});
+    doc.moveDown();
+
+    events.forEach((event) =>{
+      const eventName = event.event_name;
+      const eventDate = event.event_date.toDateString();
+      const volunteers = event.volunteer_history.length;
+
+      doc.fontSize(14).font("Helvetica-Bold").text(`Event: ${eventName}`);
+      doc.font("Helvetica").text(`Date: ${eventDate}`);
+      doc.text(`Total Volunteers: ${volunteers}`);
+      doc.moveDown();
+      doc.text("- Volunteer List -");
+      doc.moveDown();
+
+      if (volunteers === 0) {
+        doc.text(" - No volunteers registered");
+      } else {
+        event.volunteer_history.forEach((vh, index) => {
+          const number = index + 1;
+          const name = vh.user.user_profile?.full_name || "N/A";
+          const status = vh.status;
+
+          doc
+            .font("Helvetica")
+            .text(`${number}.`, { continued: true })
+            .text(`  ${name} | ${status}`, { indent: 20 });
+        });
+      }
+      doc.moveDown();
+      doc.text(
+        "------------------------------------------------------------------------------------------------------------"
+      );
+      doc.moveDown();
+    });
+    doc.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error generating event report");
+  }
+})
+
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
@@ -276,124 +524,28 @@ app.post("/api/events", async (req, res) => {
   }
 });
 
-app.delete("/api/events/:id", async (req, res) => {
-  const eventId = Number(req.params.id);
-
-  if (!eventId) {
-    return res.status(400).json({ error: "Invalid event ID" });
-  }
+app.delete("/api/events/:id", async (req, res) =>{
+  const {id} = req.params;
 
   try {
     await prisma.event_skills.deleteMany({
-      where: { event_id: eventId }
+      where: {event_id: Number(id)},
     });
 
     await prisma.volunteer_history.deleteMany({
-      where: { event_id: eventId }
+      where: {event_id: Number(id)},
     });
 
-    await prisma.event_details.delete({
-      where: { event_id: eventId }
+    const deletedEvent = await prisma.event_details.delete({
+      where: {event_id: Number(id)},
     });
 
-    return res.json({ success: true });
-  } catch (err) {
-    console.error("Error deleting event:", err);
-    return res.status(500).json({ error: "Failed to delete event" });
+    res.json({message: "Event deleted", deletedEvent});
+  } catch (err){
+    console.error("Error deleteding event:", err);
+    res.status(500).json({ error: "Failed to delete event"});
   }
 });
-
-
-
-app.get("/api/notifications/me", async (req, res) => {
-  const userId = Number(req.headers["x-user-id"]);
-  if (!userId) return res.status(401).json({ error: "Missing user ID header" });
-
-  const unreadOnly = req.query.unread === "1";
-
-  try {
-    const notices = await prisma.notification.findMany({
-      where: unreadOnly
-        ? { user_id: userId, read: false }
-        : { user_id: userId },
-      orderBy: { created_at: "desc" },
-    });
-
-    res.json(
-      notices.map((n) => ({
-        id: String(n.id),
-        title: "Notification",
-        message: n.message,
-        read: n.read,
-        kind: "info",
-        topic: "general",
-        ts: n.created_at.getTime(),
-      }))
-    );
-  } catch (err) {
-    console.error("Failed fetching notifications", err);
-    res.status(500).json({ error: "Failed to load notifications" });
-  }
-});
-app.get("/api/notifications/reminders/:userId", async (req, res) => {
-  const userId = Number(req.params.userId);
-  if (!userId) return res.status(400).json({ error: "Missing userId" });
-
-  try {
-    const upcoming = await prisma.volunteer_history.findMany({
-      where: { user_id: userId },
-      include: { event: true },
-    });
-
-    const now = Date.now();
-    const reminders: any[] = [];
-
-    for (const h of upcoming) {
-      const eventTime = new Date(h.event.event_date).getTime();
-      const diffHours = (eventTime - now) / (1000 * 60 * 60);
-
-
-      if (diffHours < 24 && diffHours > 23) {
-        reminders.push({
-          title: "Event Reminder",
-          message: `Reminder: "${h.event.event_name}" is happening tomorrow!`,
-        });
-      }
-
-      if (diffHours < 2 && diffHours > 1) {
-        reminders.push({
-          title: "Event Starting Soon",
-          message: `"${h.event.event_name}" starts in about 2 hours.`,
-        });
-      }
-    }
-
-    res.json(reminders);
-  } catch (err) {
-    console.error("Reminder error", err);
-    res.status(500).json({ error: "Failed to load reminders" });
-  }
-});
-
-
-app.post("/api/notifications/me/:id/read", async (req, res) => {
-  const userId = Number(req.headers["x-user-id"]);
-  if (!userId) return res.status(401).json({ error: "Missing user ID header" });
-
-  const id = Number(req.params.id);
-
-  try {
-    await prisma.notification.updateMany({
-      where: { id, user_id: userId },
-      data: { read: true },
-    });
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Failed updating notification", err);
-    res.status(500).json({ error: "Failed to mark read" });
-  }
-});
-
 
 app.get("/api/history/:userId", async (req, res) => {
   const { userId } = req.params;
