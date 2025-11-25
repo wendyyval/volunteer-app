@@ -4,9 +4,16 @@ import girlVolunteer from "../assets/volunteer.jpg";
 import groupPlant from "../assets/group_plant.jpg";
 import groupOrg from "../assets/organization_volunteer.jpg";
 import MainLayout from "../layouts/MainLayout";
+import { useEffect } from "react";
 
 export default function Home(){
     const nav = useNavigate();
+    useEffect(() => {
+        const role = localStorage.getItem("role");
+        if (role === "admin") {
+            nav("/admin");
+        }
+    }, []);
 
     return(
         <MainLayout>

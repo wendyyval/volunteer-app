@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import './VolunteerDetails.css';
 import { apiFetch } from '../utils/http';
-
+import toast from 'react-hot-toast';
 interface SimpleEvent {
   id: number;
   eventName: string;
@@ -46,11 +46,11 @@ const VolunteerDetails: React.FC<Props> = ({ volunteer, selectedEvent, onAssigne
       if (!res.ok) {
         const err = await res.text();
         console.error(err);
-        alert("Failed to assign event.");
+        toast.error("Failed to assign event.");
         return;
       }
 
-      alert("Event assigned!");
+      toast.success("Event assigned!");
       if (onAssigned) onAssigned();
 
     } catch (err) {

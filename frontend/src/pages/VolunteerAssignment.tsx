@@ -3,6 +3,7 @@ import VolunteerList, { Volunteer } from "../pages/VolunteerList";
 import EventList from "./EventList";
 import VolunteerDetails from "./VolunteerDetails";
 import type { AppEvent } from "./EventInfo";
+import toast from "react-hot-toast";
 
 export default function VolunteerAssign() {
   const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
@@ -26,7 +27,7 @@ export default function VolunteerAssign() {
               volunteer={selectedVolunteer}
               selectedEvent={selectedEvent}
               onAssigned={() => {
-                alert("Assignment saved!");
+                toast("Assignment saved!", { icon: "💾"});
               }}
             />
           ) : (

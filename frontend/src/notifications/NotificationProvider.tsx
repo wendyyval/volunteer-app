@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import toast from "react-hot-toast";
 import { authHeaders } from "../utils/auth";
+import { apiFetch } from "../utils/http";
 
 export type Notice = {
   id: string;
@@ -10,6 +11,7 @@ export type Notice = {
   read?: boolean;
   kind?: string;
   topic?: string;
+  ts?: number;
 };
 
 type Ctx = {
@@ -38,24 +40,30 @@ export function NotificationProvider({ children }: ProviderProps) {
     localStorage.setItem(LS_KEY, JSON.stringify(notices));
   }, [notices]);
 
-  //new notification
-  const push: Ctx["push"] = (n, showToast = true) => {
-    setNotices((prev) => [n, ...prev].slice(0, 100));
-    if (showToast) {
-      toast.success(`${n.title ?? "Notification"}: ${n.message ?? ""}`);
-    }
-  };
+const push: Ctx["push"] = (n, showToast = true) => {
+  setNotices(prev => {
+
+    if (prev.some(p => p.id === n.id)) return prev;
+    return [n, ...prev].slice(0, 100);
+  });
+
+  if (showToast) {
+    toast.success(`${n.title ?? "Notification"}: ${n.message ?? ""}`);
+  }
+};
+
 
   //Mark as read and notify backend
-  const markRead: Ctx["markRead"] = (id) => {
-    setNotices((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-    fetch(`/api/notifications/me/${id}/read`, {
-      method: "POST",
-      headers: authHeaders(),
-    }).catch(() => {});
-  };
+const markRead: Ctx["markRead"] = (id) => {
+  setNotices(prev =>
+    prev.map(n => (n.id === id ? { ...n, read: true } : n))
+  );
+
+  fetch(`api/notifications/me/${id}/read`, {
+    method: "POST",
+    headers: authHeaders(),
+  }).catch(() => {});
+};
 
   // Clear all notifications
   const clear: Ctx["clear"] = () => setNotices([]);

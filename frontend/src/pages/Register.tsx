@@ -61,7 +61,7 @@ export default function Register(){
                 localStorage.setItem("role", role);
 
                 if (loginData.user?.id){
-                    localStorage.setItem("userId", String(loginData.user.id));
+                    localStorage.setItem("user", JSON.stringify(loginData.user));
                 }
 
                 nav("/profile");

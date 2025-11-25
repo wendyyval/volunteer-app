@@ -51,9 +51,10 @@ export default function EventManage() {
         new Date(ev.event_date ?? Date.now()).toLocaleDateString(),
       ],
       requiredSkills:
-        ev.requiredSkills ??
-        ev.event_skills?.map((es: any) => es.skill?.skill_name ?? "") ??
-        [],
+        (ev.requiredSkills ??
+        ev.event_skills?.map((es: any) => es.skill?.skill_name) ??
+        [])
+        .filter(Boolean),
     }));
 
     console.log("Fetched events:", formatted);
@@ -82,7 +83,7 @@ async function sendEventToBackend(newEvent: Event) {
     if (!res.ok) throw new Error("Failed to save event");
 
     const savedEvent = await res.json();
-    setEvents((prev) => [...prev, savedEvent]);
+    await fetchEventsFromBackend();
     toast.success("Event created successfully!");
   } catch (err) {
     console.error("Error creating event:", err);
@@ -272,7 +273,6 @@ async function onSubmit(e: React.FormEvent) {
               <button
                 className="delete-btn"
                 onClick={() => {
-                  deleteEventFromBackend(ev.id);
                   deleteEventFromBackend(ev.id);
                 }}
               >

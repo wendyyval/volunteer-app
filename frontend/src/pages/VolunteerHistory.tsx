@@ -28,6 +28,14 @@ const statusColors: Record<ParticipationStatus, string> = {
 
 export default function VolunteerHistory() {
   const nav = useNavigate();
+
+    useEffect(() => {
+        const role = localStorage.getItem("role");
+        if (role === "admin") {
+            nav("/admin");
+        }
+    }, []);
+
   const [rows, setRows] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
