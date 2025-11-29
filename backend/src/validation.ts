@@ -29,7 +29,7 @@ export const eventSchema = z.object({
 });
 
 export const volunteerHistorySchema = z.object({
-  user_id: z.string().min(1, "user_id is required"),
+  user_id: z.coerce.number().int().positive(),
   event_id: z.number().int().positive(),
   participation_date: z.coerce.date(),
   status: z.enum(["Registered", "Confirmed", "Attended", "No_Show", "Canceled", "Withdrawn"]),

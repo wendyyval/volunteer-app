@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for validation.ts</title>
+    <title>Code coverage report for src/routes/skills.ts</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
+            background-image: url(../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> validation.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/routes</a> skills.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">81.25% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>13/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>3/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">81.25% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>13/16</span>
             </div>
         
             
@@ -105,101 +105,101 @@
 <a name='L40'></a><a href='#L40'>40</a>
 <a name='L41'></a><a href='#L41'>41</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { z } from "zod";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Router } from "express";
+import { prisma } from "../db";
 &nbsp;
-export const credentialsSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-  role: z.enum(["volunteer", "admin"]).default("volunteer"),
+const router = Router();
+&nbsp;
+router.post("/", async (req, res) =&gt; {
+  const { skill_name } = req.body;
+&nbsp;
+  if (!skill_name) {
+    return res.status(400).json({ error: "Skill name is required" });
+  }
+&nbsp;
+  try {
+    // Try create
+    const skill = await prisma.skills.create({
+      data: { skill_name },
+    });
+<span class="cstat-no" title="statement not covered" >    return res.status(201).json(skill);</span>
+&nbsp;
+  } catch (err: any) {
+    // If already exists, return existing one
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (err.code === "P2002") {
+      const existing = await prisma.skills.findUnique({
+        where: { skill_name },
+      });
+      return res.status(201).json(existing);
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    console.error("Skill error:", err);</span>
+<span class="cstat-no" title="statement not covered" >    return res.status(500).json({ error: "Failed to add skill" });</span>
+  }
 });
 &nbsp;
-export const profileSchema = z.object({
-  full_name: z.string().min(2).max(50),
-  address1: z.string().min(2).max(100),
-  address2: z.string().max(100).optional(),
-  city: z.string().min(2).max(100),
-  state: z.string().length(2, "State code must be 2 characters"),
-  zip: z.string().min(5).max(9),
-  preferences: z.string().max(500).optional(),
+// GET skills
+router.get("/", async (req, res) =&gt; {
+  const skills = await prisma.skills.findMany();
+  res.json(skills);
 });
 &nbsp;
-export const skillSchema = z.object({
-  skill_name: z.string().min(2).max(50),
-});
-&nbsp;
-export const eventSchema = z.object({
-  event_name: z.string().min(2).max(100),
-  description: z.string().min(2).max(500),
-  location: z.string().min(2).max(255),
-  urgency: z.enum(["Low", "Medium", "High"]),
-  event_date: z.coerce.date(),
-});
-&nbsp;
-export const volunteerHistorySchema = z.object({
-  user_id: z.string().min(1, "user_id is required"),
-  event_id: z.number().int().positive(),
-  participation_date: z.coerce.date(),
-  status: z.enum(["Registered", "Confirmed", "Attended", "No_Show", "Canceled", "Withdrawn"]),
-});
-&nbsp;
-export type CredentialsInput = z.infer&lt;typeof credentialsSchema&gt;;
-export type ProfileInput = z.infer&lt;typeof profileSchema&gt;;
-export type EventInput = z.infer&lt;typeof eventSchema&gt;;
-export type VolunteerHistoryInput = z.infer&lt;typeof volunteerHistorySchema&gt;;</pre></td></tr></table></pre>
+export default router;
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-10-27T21:53:57.886Z
+                at 2025-11-29T04:12:00.091Z
             </div>
-        <script src="prettify.js"></script>
+        <script src="../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
     </body>
 </html>
     

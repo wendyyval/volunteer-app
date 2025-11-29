@@ -5,10 +5,12 @@
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "csv-writer": "^1.6.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.15.3",
     "node-cron": "^4.2.1",
+    "pdfkit": "^0.17.2",
     "typescript": "^5.9.3",
     "uuid": "^13.0.0",
     "zod": "^4.1.12"

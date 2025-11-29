@@ -12,8 +12,8 @@
 
 .event-details-container {
     position: absolute;
-    top: 540px;
-    left: 1000px;
+    top: 600px;
+    left: 900px;
     width: 805px;
     height: 292px;
     border: 3px solid var(--stroke); 

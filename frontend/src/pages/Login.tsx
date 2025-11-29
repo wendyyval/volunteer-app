@@ -48,6 +48,7 @@ export default function Login(){
             }else{
                 nav("/history");
             }
+            
         } catch {
             setErr("Network error. Please try again.");
         } finally {

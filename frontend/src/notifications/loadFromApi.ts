@@ -11,8 +11,8 @@ export function useLoadNotices() {
 
   return async function loadNotices({ unreadOnly = false }: Options = {}) {
     const path = unreadOnly
-      ? "/notifications/me?unread=1"
-      : "/notifications/me";
+      ? "/api/notifications/me?unread=1"
+      : "/api/notifications/me";
 
     try {
       const res = await apiFetch(path, { headers: authHeaders() });

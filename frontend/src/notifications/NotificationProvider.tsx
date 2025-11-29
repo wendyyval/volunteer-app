@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import toast from "react-hot-toast";
 import { authHeaders } from "../utils/auth";
-import { apiFetch } from "../utils/http";
+
 
 export type Notice = {
   id: string;

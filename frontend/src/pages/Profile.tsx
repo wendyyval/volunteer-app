@@ -40,7 +40,7 @@ export default function Profile() {
     useEffect(() => {
     async function loadSkills() {
       try {
-        const res = await apiFetch("/skills"); 
+        const res = await apiFetch("/api/skills"); 
         const data = await res.json();
         setAvailableSkills(
           data.map((s: any) => ({ value: s.skill_name, label: s.skill_name }))
